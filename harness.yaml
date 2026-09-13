@@ -13,11 +13,144 @@ application:
     - model_policy
     - knowledge_and_run_state_paths
   model_names_are_time_sensitive: true
+  native_convention_discovery:
+    required: true
+    read_only: true
+    required_before:
+      - concept_mapping
+      - file_map_proposal
+      - target_write
+    identify:
+      - platform
+      - platform_version
+      - operating_mode
+      - host_runtime
+    identity_policy:
+      required: true
+      if_missing_or_ambiguous:
+        allowed_action: minimal_read_only_clarification
+        mapping_allowed: false
+        approval_to_proceed_allowed: false
+        target_writes_allowed: false
+        unresolved_result: blocked
+    inspect:
+      - existing_target_instructions
+      - native_configuration
+      - agent_subagent_support
+      - skills
+      - permissions
+      - checks
+      - knowledge_and_run_state
+    evidence:
+      first_party_sources_required: true
+      required_fields:
+        - accessed_date
+        - applicable_platform_version
+        - applicable_operating_mode
+        - finding
+        - confidence
+        - verification_evidence_ref
+      source_reference:
+        exactly_one_of:
+          - source_url
+          - source_path
+        source_path_must_be_exact: true
+      mapped_capability_fields:
+        - exact_native_destination
+        - mechanism
+        - verification_evidence_ref
+    verify_host_capabilities: true
+    unknown_policy: stop_and_ask_or_report_blocked
+    allow_guessing_paths: false
+    adapter_output:
+      require_native_destinations: true
+      unknown_destination_policy: blocked
+  discovery_invariants:
+    per_destination_status_required: true
+    status_vocabulary:
+      - verified
+      - unknown
+      - blocked
+    verified_requires:
+      - every_relevant_destination_status_verified
+      - every_relevant_evidence_status_verified
+      - every_reuse_or_translate_entry_has_exact_native_destination
+      - every_reuse_or_translate_entry_has_mechanism
+      - every_reuse_or_translate_entry_has_verification_evidence_ref
+    invalid_evidence:
+      confidence_values:
+        - low
+      statuses:
+        - stale
+        - contradictory
+        - low_confidence
+        - unknown
+      maps_to_status: unknown
+      may_map_to_blocked: true
+    unknown_or_blocked:
+      approval_decision_forbidden:
+        - proceed
+      target_writes_forbidden: true
+      mapping_and_file_map_forbidden: true
+      required_behavior: stop_and_ask_or_report_blocked
+  native_post_write_verification:
+    required: true
+    required_after: target_write
+    file_existence_alone_is_insufficient: true
+    per_destination: true
+    status_vocabulary:
+      - verified
+      - unknown
+      - blocked
+    required_record_fields:
+      - capability
+      - status
+      - exact_native_destination
+      - mechanism
+      - verification_evidence_ref
+      - accessed_date
+      - applicable_platform_version
+      - applicable_operating_mode
+      - finding
+      - confidence
+    evidence:
+      required: true
+      source_reference:
+        exactly_one_of:
+          - source_url
+          - source_path
+        source_path_must_be_exact: true
+    result_rules:
+      verified_requires:
+        - every_written_destination_has_a_record
+        - every_written_destination_status_verified
+        - every_record_has_required_evidence
+      unknown_or_blocked:
+        approval_decision_forbidden:
+          - proceed
+        stop_before_additional_writes: true
+        run_status: blocked
+        success_claim_forbidden: true
+    failure_behavior:
+      missing_record_or_evidence: blocked
+      failed_native_check: blocked
+      unknown_evidence: blocked
+      stop_before_additional_writes: true
+      approval_decision_proceed_forbidden: true
 
 # The platform adapter maps these logical capabilities to native tools.
 main_agent:
+  # This is the harness repository's own bootstrap source, not a universal
+  # target-repository destination. Target destinations require discovery and
+  # explicit approval.
   bootstrap: AGENTS.md
+  bootstrap_role: source_repository_bootstrap
+  bootstrap_target_destination: null
+  bootstrap_target_destination_policy: independently_discovered_and_approved
   prompt: AGENTS.md
+  prompt_role: source_repository_bootstrap
+  prompt_target_destination: null
+  prompt_target_destination_policy: independently_discovered_and_approved
   owns:
     - orchestration
     - clarification
