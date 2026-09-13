@@ -26,19 +26,41 @@ User Request
     ↓
 Main Agent (orchestrates)
     ↓
-delegate Intake → Clarify → delegate Plan
-                         ↓
-                   User Approval
-                         ↓
-delegate Test Design → delegate Implement → delegate Verify → delegate Review
-                         ↓
-           delegate Knowledge Update → Finalize
+delegate Intake (once by default) → Clarify if needed → delegate Planner (once by default)
+    ↓
+User Approval
+    ↓
+Dependency-aware execution graph
+    ├─ ready Slice A → Test/Implement → Verify → Review
+    ├─ ready Slice B → Test/Implement → Verify → Review
+    └─ dependent or conflicting slices wait or serialize
+    ↓
+delegate Knowledge Update → Finalize
 ```
 
 The workflow uses specialist subagents for Intake, Planning, Test Design,
 Implementation, Review, and Knowledge Curation. Root-cause analysis is a reusable
 skill loaded by Intake, Planner, Implementer, or Reviewer when the task requires
-it; it is not a permanent agent role.
+it; it is not a permanent agent role. Intake and Planning are single-pass by
+default. Intake re-enters only for changed requirements or a newly discovered
+Ticket mismatch; Planning re-enters only for explicit human feedback or evidence
+that the Plan is invalid or materially changed. Ordinary implementation or test
+failures do not restart either stage.
+
+After explicit user approval, the Main Agent schedules dependency-ready slices in
+parallel when their approved scopes, files, resources, and mutable state do not
+conflict. Dependencies, overlapping files, shared resources, conflicting state,
+and ordering requirements serialize only the affected work. “One approved task
+slice at a time” means one slice per Implementer invocation, not global
+serialization.
+
+An ordinary test or implementation failure routes directly to the same
+Implementer slice for a bounded retry with failure evidence and root-cause
+context. Re-planning occurs only when evidence shows an invalid Plan or a
+material change to scope, acceptance criteria, dependencies, permissions, or
+platform assumptions. A materially changed Plan requires renewed user approval
+before implementation resumes. Role boundaries, scoped permissions, and the
+approval gate remain in force throughout parallel execution.
 
 ## Files
 

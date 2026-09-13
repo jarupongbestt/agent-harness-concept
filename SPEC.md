@@ -57,6 +57,16 @@ model.
 
 ## 3. Workflow
 
+The Main Agent executes this lifecycle as a dependency-aware graph, not as a
+globally synchronous queue. Intake and Planning are single-pass stages by
+default. After approval, every ready slice may run concurrently with other ready
+slices when their approved scopes, resources, and state do not conflict. A
+dependency, conflict, or ordering requirement is a reason to wait or serialize;
+it is not a reason to serialize unrelated work. Recovery follows the narrowest
+valid route: retry the affected Implementer slice for an ordinary implementation
+or test failure, and re-plan only when the approved plan or requirements are
+shown to be invalid or materially changed.
+
 ### 3.1 User Request
 
 The user provides a natural-language request. The Main Agent creates a new run and
@@ -72,11 +82,21 @@ is required.
 For bugfixes or unclear failures, Intake loads the `root-cause` skill and performs a
 bounded investigation itself. It must distinguish evidence from assumptions.
 
+Intake runs once per run by default. The Main Agent may re-enter Intake only when
+user clarification changes the Ticket, or when newly discovered facts provide
+evidence that the Ticket is mismatched. The reason and resulting Ticket change
+must be recorded. An implementation, test, lint, or verification failure alone
+does not justify another Intake pass.
+
 ### 3.3 Clarify
 
 Clarify is a Main Agent responsibility. It asks the user only when the Ticket lacks
 information needed to produce a reliable plan. No implementation or detailed
 planning occurs while critical ambiguity remains.
+
+When clarification changes the Ticket, the Main Agent records the changed
+requirements and may perform the bounded Intake re-entry described in section 3.2.
+Clarification that does not change the Ticket does not restart Intake or Planning.
 
 ### 3.4 Plan
 
@@ -88,7 +108,18 @@ For bugfixes, the Planner loads `root-cause` when Intake's evidence is incomplet
 when the proposed change depends on an unverified cause.
 
 Each slice includes files, dependencies, acceptance criteria, difficulty, and test
-requirements.
+requirements. The Plan also identifies the scopes, resources, mutable state, and
+ordering constraints that control whether slices may run concurrently. A slice is
+ready when its declared dependencies are complete and its approved execution
+scope does not conflict with other work scheduled at the same time.
+
+Planning runs once per run by default. The Main Agent may re-enter Planning only
+after explicit human feedback on the Plan, or after evidence shows that the Plan
+is objectively incomplete, contradictory, out of scope, or invalidated by a
+changed Ticket, acceptance criterion, dependency, permission, or platform
+assumption. A normal implementation or test failure does not by itself justify
+re-planning. Any materially changed Plan requires renewed user approval before
+editing resumes.
 
 ### 3.5 User Approval
 
@@ -104,6 +135,11 @@ Proceed with this plan?
 If the user asks for changes, the Main Agent sends feedback to the Planner and
 repeats the approval step. No agent may edit project files before approval.
 
+Approval authorizes only the reviewed Plan and its declared scopes. After approval,
+the Main Agent builds the dependency-aware execution graph and may dispatch
+independent ready slices concurrently. A re-plan or material scope change pauses
+further edits under the old approval and requires a new approval decision.
+
 ### 3.6 Test Design
 
 When required, the Main Agent delegates this stage to the Test Designer.
@@ -112,22 +148,42 @@ For a feature or bugfix without matching coverage, the Test Designer creates or
 extends tests from the acceptance criteria. It should not depend on the
 Implementer's implementation approach.
 
+Test Design dependencies are per slice, not global. Test Design is a prerequisite
+for an Implementer only when that slice's implementation depends on the Test
+Design output. Independent Test Designer work and implementation work may run
+concurrently after approval when their files, resources, and mutable state do not
+conflict. Test Designers do not modify production code.
+
 For refactors, existing tests are used as regression protection. Cosmetic changes
 may use a smoke or visual check instead of a new unit test.
 
 ### 3.7 Implement
 
-The Main Agent delegates one approved task slice at a time to the Implementer. The
-Implementer changes only the
-approved scope, follows the acceptance criteria, and returns a structured result.
+The Main Agent delegates one approved task slice at a time to each Implementer
+invocation. Multiple Implementer invocations may run concurrently when their
+slices are dependency-ready and have no overlapping files, shared resources,
+conflicting mutable state, or ordering requirement. The Implementer changes only
+the approved scope, follows the acceptance criteria, and returns a structured
+result.
 
 If implementation reveals that the plan is incomplete or incorrect, the
 Implementer stops and reports the discrepancy. The Main Agent then sends the work
 back to Plan and, if necessary, reopens approval.
 
-When a test fails, the Implementer loads `root-cause` before retrying. It must report
-the cause it is addressing rather than repeatedly changing code based only on the
-latest error message.
+When a test, acceptance, lint, build, or other check fails, the Implementer loads
+`root-cause` before retrying. If the approved scope, acceptance criteria,
+dependencies, and platform assumptions remain valid, the Main Agent routes the
+failure directly back to the same Implementer slice with the failure artifact and
+root-cause context. The Implementer must report the cause it is addressing rather
+than repeatedly changing code based only on the latest error message. Ordinary
+implementation, test, acceptance, lint, build, check, or verifier failures route
+directly to `retry_implementer` and must not invoke Intake or Planning.
+
+Each slice has a finite retry budget recorded in the Plan or run state. When the
+budget is exhausted, the Main Agent stops automatic retries and escalates with the
+attempt history for user input or an explicit blocked result. Exhausted retries do
+not trigger re-planning unless the evidence also shows that the approved Plan,
+scope, criteria, dependencies, permissions, or platform assumptions are invalid.
 
 ### 3.8 Verify
 
@@ -144,6 +200,17 @@ the narrowest useful checks first, followed by affected regression checks:
 
 The Main Agent decides whether a failure requires a retry, escalation, re-planning,
 or user input.
+
+The Verifier returns a recommended recovery action with its result. It recommends
+`retry_implementer` for an ordinary implementation, test, acceptance, lint,
+build, check, or verifier failure when the approved scope, criteria, and
+dependency graph remain valid; `replan` only when evidence shows that the Plan or
+those assumptions are objectively invalid or materially changed;
+`escalate` when the retry budget is exhausted or the failure cannot be safely
+classified; `user_input` when a decision is required; and `pass` when verification
+succeeds. The affected slice, evidence, and reason for the recommendation must be
+included. A normal test failure alone must never be reported as a reason to invoke
+the Planner.
 
 ### 3.9 Review
 

@@ -44,16 +44,40 @@ names exactly when changing the surrounding language.
 ```text
 User Request
     ↓
-Main Agent → delegate Intake → delegate Planner
-                              ↓
-                         User Approval
-                              ↓
-      delegate Test Designer → delegate Implementer (one slice at a time)
-                              ↓
-          delegate Verify → delegate Reviewer
-                              ↓
-           delegate Knowledge Curator → Finalize
+Main Agent → delegate Intake (single-pass by default)
+    ↓
+Clarify only when needed → delegate Planner (single-pass by default)
+    ↓
+User Approval
+    ↓
+Build dependency-aware execution graph
+    ├─ ready, non-conflicting Slice A → Test/Implement → Verify → Review
+    ├─ ready, non-conflicting Slice B → Test/Implement → Verify → Review
+    └─ dependent or conflicting work waits or serializes
+    ↓
+delegate Knowledge Curator → Finalize
 ```
+
+Intake and Planning run once per run by default. Intake may re-enter only when
+user clarification changes the Ticket or newly discovered facts show a Ticket
+mismatch. Planning may re-enter only after explicit human feedback or evidence
+that the approved Plan is invalid, incomplete, contradictory, out of scope, or
+no longer satisfies the Ticket. Ordinary implementation, test, lint, or
+verification failures do not restart either stage.
+
+After approval, the Main Agent schedules dependency-ready slices concurrently
+when their approved scopes, files, resources, and mutable state do not conflict.
+Dependencies, overlapping files, shared resources, conflicting state, or ordering
+requirements serialize only the affected work; unrelated slices remain eligible
+for parallel execution. “One approved task slice at a time” means one slice per
+Implementer invocation, not one globally serialized slice at a time.
+
+An ordinary test or implementation failure routes directly back to the same
+Implementer slice for a bounded retry with the failure evidence and root-cause
+context. Re-planning is reserved for evidence of an invalid Plan or a material
+scope, acceptance-criteria, dependency, permission, or platform change. Any
+materially changed Plan requires renewed user approval before implementation
+resumes.
 
 Before implementation:
 
@@ -61,7 +85,9 @@ Before implementation:
    instructions.
 2. Read the knowledge-base root and recent activity when a knowledge base exists.
 3. Delegate Intake and Planning.
-4. Present the plan to the user and obtain explicit approval.
+4. Identify slice dependencies and conflicts so independent work can be scheduled
+   in parallel after approval.
+5. Present the plan to the user and obtain explicit approval.
 
 No specialist may edit project files before approval. The Main Agent must not infer
 approval from a casual message.

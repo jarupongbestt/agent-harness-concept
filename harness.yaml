@@ -44,10 +44,44 @@ workflow:
       - proceed
       - ask_or_adjust
   execution:
+    scheduler: dependency_aware
+    parallel_independent_slices: true
     default_mode: in_place_uncommitted
     allow_commit: false
     allow_push: false
     allow_merge: false
+  reentry:
+    intake:
+      default_passes: 1
+      allowed_triggers:
+        - user_clarification_changes_ticket
+        - newly_discovered_ticket_mismatch
+    planner:
+      default_passes: 1
+      allowed_triggers:
+        - explicit_human_plan_feedback
+        - invalid_plan
+        - scope_change
+        - acceptance_criteria_change
+        - dependency_invalidation
+        - permission_invalidation
+        - platform_invalidation
+    implementer:
+      retry_on:
+        - verification_test_failure
+        - acceptance_failure_with_valid_scope
+        - verification_lint_failure
+        - verification_build_failure
+        - verification_check_failure
+        - verifier_failure
+      replan_only_on:
+        - invalid_plan
+        - scope_change
+        - acceptance_criteria_change
+        - dependency_invalidation
+        - permission_invalidation
+        - platform_invalidation
+      max_retries_per_slice: 2
 
 delegation:
   required: true
