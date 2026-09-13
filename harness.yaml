@@ -1,0 +1,112 @@
+version: "0.1"
+name: portable-agent-harness
+
+application:
+  protocol: APPLY.md
+  folder_layout: conceptual_not_prescriptive
+  coordination_language: en
+  user_facing_language: follow_user_input
+  allow_hybrid_user_facing_response: true
+  require_user_choices_before_adapter_changes:
+    - target_platforms
+    - existing_instruction_migration
+    - model_policy
+    - knowledge_and_run_state_paths
+  model_names_are_time_sensitive: true
+
+# The platform adapter maps these logical capabilities to native tools.
+main_agent:
+  bootstrap: AGENTS.md
+  prompt: AGENTS.md
+  owns:
+    - orchestration
+    - clarification
+    - approval
+    - routing
+    - recovery
+    - finalization
+
+workflow:
+  stages:
+    - intake
+    - clarify
+    - plan
+    - approval
+    - test_design
+    - implement
+    - verify
+    - review
+    - knowledge_update
+    - finalize
+  approval:
+    required_before_edit: true
+    options:
+      - proceed
+      - ask_or_adjust
+  execution:
+    default_mode: in_place_uncommitted
+    allow_commit: false
+    allow_push: false
+    allow_merge: false
+
+delegation:
+  required: true
+  fallback: "If the host has no subagent capability, preserve role boundaries and report the limitation."
+
+routing:
+  tier_0:
+    planner: junior
+    implementer: junior
+    review: lightweight
+  tier_1:
+    planner: standard
+    implementer: task_level
+    review: standard
+  tier_2:
+    planner: senior
+    implementer: task_level
+    review: independent
+
+testing:
+  feature: create_or_extend
+  bugfix: reproduce_first
+  refactor: regression_only
+  cosmetic: smoke_or_visual
+  test_author: test_designer
+  implementer_can_modify_tests: false
+
+skills:
+  root_cause:
+    enabled: true
+    used_by:
+      - intake
+      - planner
+      - implementer
+      - reviewer
+
+knowledge:
+  root: knowledge/
+  startup_reads:
+    - knowledge/main.md
+    - knowledge/log.md
+  run_state: .harness/runs/
+  internal_learning_folder: self/
+  external_compilation_folder: derived/
+  raw_external_material_folder: sources/
+  require_lint_after_update: true
+
+roles:
+  intake: prompts/intake.md
+  planner: prompts/planner.md
+  test_designer: prompts/test-designer.md
+  implementer: prompts/implementer.md
+  verifier: prompts/verifier.md
+  reviewer: prompts/reviewer.md
+  knowledge_curator: prompts/knowledge-curator.md
+
+artifacts:
+  contracts: schemas/artifacts.md
+
+skill_provenance:
+  registry: skills/origins.md
+  rule: "Every skill must declare an origin or project-specific status in the registry."
