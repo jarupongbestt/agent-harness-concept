@@ -14,6 +14,12 @@ portable concept defines responsibilities, workflow, permissions, artifacts, and
 knowledge rules. Each platform and target repository may map those responsibilities
 to different paths or native configuration.
 
+The source `skills/` directory is a library of portable skill definitions. Every
+catalog entry that is materialized must come from an actual
+`skills/<name>/SKILL.md`. Applying an adapter translates selected definitions into
+the target platform's native skill directory; it does not copy the source
+`skills/` directory wholesale.
+
 Never copy, fork, install, or reproduce the `agent-harness` repository wholesale
 in a target repository. In particular, do not automatically copy its root files
 or its `adapters/`, `knowledge/`, `prompts/`, `schemas/`, or `skills/` trees.
@@ -180,7 +186,14 @@ When the user asks to apply this harness:
    instructions. The bootstrap must tell the host to use specialist subagents
    when supported.
 7. Translate or selectively reuse the role prompts and skills named in the map;
-   do not copy this concept's example paths blindly.
+   do not copy this concept's example paths blindly. For every selected skill,
+   read its actual `skills/<name>/SKILL.md` source definition and materialize it
+   at the verified native destination. A catalog row without a source definition
+   is an adapter error and must be reported, not silently skipped. For a full
+   harness application, materialize every entry in `harness.yaml` under
+   `skills.definitions`; `root-cause` is conditional at invocation time, not at
+   installation time. Omitting a definition requires an explicit reason in the
+   approved concept map.
 8. Connect the target project's knowledge base, if it has one, using the
    knowledge read/write contract and only with the approved knowledge scope.
 9. Validate the applied adapter, including a native post-write verification that
@@ -258,9 +271,12 @@ list or one-file-per-role layout:
 - specialist delegation for each required role, using the host's native mechanism;
 - role guidance adapted from [`prompts/`](prompts) when the target needs it;
 - mappings for the portable skills in [`skills/README.md`](skills/README.md) when
-  the target has compatible skill support;
+  the target has compatible skill support. The source definitions are the
+  corresponding `skills/*/SKILL.md` files, not the catalog alone;
 - knowledge integration only when the target uses a knowledge base and the user
-  approves its scope;
+  approves its scope. When approved, use the knowledge contract and its
+  `knowledge/main.md`, `knowledge/log.md`, and domain template/example as source
+  material rather than copying unrelated concept files;
 - run-state storage only when the target needs persisted execution artifacts and
   the user approves it.
 

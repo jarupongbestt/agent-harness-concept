@@ -258,6 +258,21 @@ testing:
   implementer_can_modify_tests: false
 
 skills:
+  source_root: skills/
+  definitions:
+    - context-engineering
+    - specification
+    - clarification
+    - root-cause
+    - task-decomposition
+    - source-driven-development
+    - incremental-implementation
+    - test-driven-development
+    - code-review
+    - security-and-hardening
+    - documentation-and-adrs
+    - harness-artifacts
+    - knowledge-base
   root_cause:
     enabled: true
     used_by:
@@ -268,13 +283,17 @@ skills:
 
 knowledge:
   root: knowledge/
+  domain_root: knowledge/domain/
   startup_reads:
     - knowledge/main.md
+  optional_reads:
     - knowledge/log.md
   run_state: .harness/runs/
-  internal_learning_folder: self/
-  external_compilation_folder: derived/
-  raw_external_material_folder: sources/
+  internal_learning_folder: domain/self/
+  external_compilation_folder: domain/derived/
+  raw_external_material_folder: domain/sources/
+  templates_folder: _template/
+  examples_folder: _example/
   require_lint_after_update: true
 
 roles:

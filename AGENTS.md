@@ -83,7 +83,9 @@ Before implementation:
 
 1. Read [`README.md`](README.md), [`SPEC.md`](SPEC.md), and the relevant adapter
    instructions.
-2. Read the knowledge-base root and recent activity when a knowledge base exists.
+2. Read `knowledge/main.md` when a knowledge base exists. Read `knowledge/log.md`
+   only when historical activity, contradictions, recurring failures, audit, or
+   lint context is needed; it is not a mandatory startup read.
 3. Delegate Intake and Planning.
 4. Identify slice dependencies and conflicts so independent work can be scheduled
    in parallel after approval.
@@ -118,6 +120,10 @@ Roles define **who** owns a stage. Skills define **how** work is performed and m
 be loaded by more than one role. The origin of every listed skill is recorded in
 [`skills/origins.md`](skills/origins.md); do not present this catalog as if all
 skills came from one agent platform.
+
+Portable skill definitions live under [`skills/`](skills/), with one
+`<skill-name>/SKILL.md` per reusable skill. The catalog and provenance registry
+must describe those definitions; they are not substitutes for them.
 
 The portable harness is a synthesis. The principal source repositories are:
 

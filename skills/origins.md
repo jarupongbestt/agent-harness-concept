@@ -23,6 +23,8 @@ project-specific capability, not a skill supplied by this repository.
 | `code-review` | Synthesized | [template-harness](https://github.com/jarupongbestt/template-harness); standard code-review practice | Independent review of correctness, scope, regressions, and test quality |
 | `security-and-hardening` | Synthesized | [template-harness](https://github.com/jarupongbestt/template-harness); standard secure-development practice | Risk-based scrutiny of sensitive boundaries and unsafe assumptions |
 | `documentation-and-adrs` | Adapted | [knowledge-base](https://github.com/jarupongbestt/knowledge-base) | Record durable decisions, constraints, procedures, and recurring failures |
+| `harness-artifacts` | Synthesized | [agent-harness](https://github.com/jarupongbestt/agent-harness) | Preserve structured artifact contracts and evidence fields across roles |
+| `knowledge-base` | Adapted | [knowledge-base](https://github.com/jarupongbestt/knowledge-base) | Navigate, update, and lint the durable knowledge tree |
 | `frontend-ui` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `api-design` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `database-migrations` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |

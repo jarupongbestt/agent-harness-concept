@@ -69,10 +69,13 @@ approval gate remain in force throughout parallel execution.
 - [`schemas/artifacts.md`](schemas/artifacts.md) — portable input/output contracts.
 - [`prompts/`](prompts) — role prompt templates.
 - [`adapters/README.md`](adapters/README.md) — requirements for agent-platform adapters.
-- [`skills/README.md`](skills/README.md) — reusable skill model.
+- [`skills/README.md`](skills/README.md) — reusable skill model and materialization
+  rules.
 - [`AGENTS.md`](AGENTS.md) — multi-agent bootstrap and delegation contract.
 - [`skills/origins.md`](skills/origins.md) — origin and provenance of every listed skill.
-- [`knowledge/README.md`](knowledge/README.md) — knowledge-base integration rules.
+- [`knowledge/README.md`](knowledge/README.md) — knowledge-base integration rules;
+  `knowledge/main.md`, `knowledge/log.md`, and the domain template/example are
+  included as a starting structure.
 
 This repository is a concept/specification. Runtime implementations belong in the
 platform-specific adapter directories.

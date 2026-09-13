@@ -35,6 +35,9 @@ another agent's native instructions and tools.
 4. **Small isolated contexts.** Each specialist receives only the ticket, relevant
    knowledge, scope, and task-specific inputs.
 5. **Skills are reusable.** Roles describe responsibility; skills describe methods.
+   Every portable skill listed by the harness has a corresponding
+   `skills/<name>/SKILL.md` source definition. A catalog entry alone is not an
+   installable skill.
 6. **Mechanical checks are not LLM reasoning.** Running tests, linting, formatting,
    and schema validation should use scripts or native tools where possible.
 7. **Least privilege.** An agent receives only the tools and write scope required
@@ -94,9 +97,11 @@ assigns it a `run_id`.
 ### 3.2 Intake
 
 The Main Agent delegates Intake to the Intake Agent. The Intake Agent reads the
-knowledge root index and recent activity, then creates a Ticket. It identifies the
-change type, scope, acceptance criteria, risk, confidence, and whether clarification
-is required.
+`knowledge/main.md` when it exists, then creates a Ticket. It consults
+`knowledge/log.md` only when historical activity, contradictions, recurring
+failures, audit, or lint context is relevant. It identifies the change type,
+scope, acceptance criteria, risk, confidence, and whether clarification is
+required.
 
 For bugfixes or unclear failures, Intake loads the `root-cause` skill and performs a
 bounded investigation itself. It must distinguish evidence from assumptions.
