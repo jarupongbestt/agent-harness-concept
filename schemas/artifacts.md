@@ -63,6 +63,12 @@ target_inventory:
   knowledge_paths: []
   run_state_paths: []
   constraints: []
+target_layout:
+  status: unknown              # verified | unknown | blocked
+  native_projection_preview: []
+  source_tree_reproduction: unknown  # true | false | unknown
+  unapproved_source_tree_paths: []
+  verification_evidence_ref: null
 host_capabilities:
   - capability: delegate
     status: verified       # verified | unknown | blocked
@@ -117,6 +123,13 @@ of a native convention. Native verification is required after an approved write;
 file existence alone is insufficient, and the result belongs in the Run Summary.
 This contract does not create platform config files or hardcode a universal
 native layout.
+
+`target_layout` is required for an application that writes files. The preview
+must show the target-native destinations before approval. `source_tree_reproduction`
+must be `false`, and `unapproved_source_tree_paths` must be empty, before the
+application may proceed. A value of `true` or `unknown` blocks approval and target
+writes; an existing target path may be retained only when the inventory and map
+give it an independent reason.
 
 ## Concept Map
 
@@ -174,6 +187,12 @@ Map. It is created only after verified discovery and explicit user approval.
 file_map_id: file-map-123
 concept_map_id: concept-map-123
 status: unknown               # verified | unknown | blocked; an unknown entry is illustrative
+layout_audit:
+  status: unknown              # verified | unknown | blocked
+  native_projection_preview: []
+  source_tree_reproduction: unknown
+  unapproved_source_tree_paths: []
+  verification_evidence_ref: null
 entries:
   - file_map_entry_id: file-1
     concept: workflow_lifecycle
@@ -202,6 +221,11 @@ mechanism and link to discovery evidence. Every `reference` or `omit` entry
 must not invent a destination; every `omit` entry must state its reason. Each
 entry has a per-destination `status`, using only `verified`, `unknown`, or
 `blocked`.
+
+`layout_audit.status` may be `verified` only when the preview is target-native,
+`source_tree_reproduction` is `false`, and no unapproved source-tree path is
+listed. A missing, failed, or unknown layout audit forbids approval with
+`decision: proceed` and forbids target writes.
 
 Unknown or blocked discovery, mapping, or file-map entries forbid approval with
 `decision: proceed` and forbid target writes. Stale, contradictory, or

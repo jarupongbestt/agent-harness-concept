@@ -57,6 +57,25 @@ model.
 
 ## 3. Workflow
 
+### 3.0 Native projection when applying the concept
+
+This repository is source material for adapters, not an installable directory
+template. An application to another repository must first perform read-only
+native convention discovery, then produce a target-native layout preview and
+source-tree-copy audit before requesting approval. The preview must name the
+exact verified destination and load, invocation, or enforcement mechanism for
+each `reuse` or `translate` entry.
+
+The applying agent must not reproduce this repository's root `adapters/`,
+`knowledge/`, `prompts/`, `schemas/`, or `skills/` directories merely to preserve
+its shape. It should translate only the approved responsibilities into the
+target platform's native configuration. If the host supports the current Codex
+conventions, that can mean root `AGENTS.md`, `.codex/agents/`, and
+`.agents/skills/`; if it supports the current Claude Code conventions, that can
+mean `CLAUDE.md`, `.claude/agents/`, and `.claude/skills/`. The actual run must
+verify those destinations and must stop when evidence is missing or the proposed
+layout is source-shaped.
+
 The Main Agent executes this lifecycle as a dependency-aware graph, not as a
 globally synchronous queue. Intake and Planning are single-pass stages by
 default. After approval, every ready slice may run concurrently with other ready

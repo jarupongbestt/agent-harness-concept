@@ -76,3 +76,11 @@ approval gate remain in force throughout parallel execution.
 
 This repository is a concept/specification. Runtime implementations belong in the
 platform-specific adapter directories.
+
+Applying the concept to another repository does not install this tree. The
+applying agent must discover the target platform and project its responsibilities
+into that platform's native destinations. For example, a Codex target may use
+root `AGENTS.md`, `.codex/agents/`, and `.agents/skills/`, while a Claude Code
+target may use `CLAUDE.md`, `.claude/agents/`, and `.claude/skills/`. These are
+discovery-verified destinations, not a reason to copy this repository's
+`prompts/`, `schemas/`, `knowledge/`, or `skills/` directories wholesale.

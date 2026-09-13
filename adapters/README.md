@@ -74,6 +74,13 @@ universal destinations. The same applies to every path in the illustrative
 mapping below. An example may be used only after independent discovery verifies
 the actual host's destination and mechanism.
 
+The application output must be a native projection. If a proposed target tree
+looks like a copy of this repository—for example, it adds root `prompts/`,
+`schemas/`, `knowledge/`, or `skills/` solely because those directories exist
+here—stop before approval and return a failed source-tree-copy audit. Translate
+role prompts into the host's native agent or skill format, or reference them as
+source material without copying them.
+
 Each adapter must define how to perform these capabilities. **Delegation is
 required by the portable design**: the adapter must map the specialist roles to
 native subagents, agent sessions, or equivalent isolated execution contexts.
@@ -102,14 +109,23 @@ adapters/<platform>/
 └── install-or-run.md
 ```
 
-Platform path examples (illustrative and non-normative):
+Platform path examples (illustrative and non-normative; verify before use):
 
 ```text
-Claude   → CLAUDE.md and .claude/
-Codex    → AGENTS.md and Codex skill configuration
+Claude   → CLAUDE.md, .claude/agents/, and .claude/skills/
+Codex    → AGENTS.md, .codex/agents/, and .agents/skills/
 OpenCode → .opencode/ agents, tools, and plugins
 Hermes   → Hermes skills and tool configuration
 ```
+
+For the current evidence behind these examples, consult the official
+[Codex instruction guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md),
+[Codex subagent guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents),
+and [Codex skills guidance](https://learn.chatgpt.com/docs/build-skills), plus
+Claude Code's [instruction guidance](https://code.claude.com/docs/en/memory),
+[skills guidance](https://code.claude.com/docs/en/skills), and
+[subagent guidance](https://code.claude.com/docs/en/agents). These links do not
+replace per-run discovery and native post-write verification.
 
 ## Native post-write verification
 

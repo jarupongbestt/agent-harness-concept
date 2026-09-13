@@ -22,6 +22,31 @@ and create only target-native files and directories needed for the approved setu
 Reuse or adapt an individual concept only when the mapping and approval process
 below explicitly permits it.
 
+### Output-shape invariant
+
+The result of an application must be a **native projection**, not a copy of this
+repository's shape. Before approval, show the projected target tree and compare it
+with the source tree. If the projection reproduces this repository's root-level
+`adapters/`, `knowledge/`, `prompts/`, `schemas/`, or `skills/` directories without
+an independent target-repository reason, the application has failed and must stop.
+
+For current first-party conventions, a Codex projection commonly separates its
+destinations: repository instructions remain in root `AGENTS.md`, project-scoped
+custom agents use `.codex/agents/*.toml`, and repository skills use
+`.agents/skills/<name>/SKILL.md`. Do not move the entire concept under `.codex/`;
+`.codex/` is only used for destinations that Codex actually recognizes, such as
+project configuration or custom-agent definitions.
+
+A Claude Code projection commonly uses root `CLAUDE.md` (or an existing supported
+project instruction location), `.claude/agents/*.md` for custom subagents, and
+`.claude/skills/<name>/SKILL.md` for project skills. Do not use `.cluade/`, and do
+not create a second instruction tree when an existing `AGENTS.md` can be imported
+or otherwise reused under the approved map.
+
+These examples are research anchors, not defaults. The applying agent must still
+verify the exact destination and load/invocation mechanism for the identified
+platform version and operating mode before placing either path in a map.
+
 ## Native convention discovery gate
 
 Native convention discovery is a mandatory, read-only gate before concept
@@ -143,6 +168,9 @@ When the user asks to apply this harness:
    decisions before writing, generating, installing, or changing anything in the
    target. A guessed, stale, or contradictory destination must not appear in the
    map.
+   Include a native layout preview and a source-tree-copy audit in the approval
+   packet. Approval is invalid if that preview is source-shaped or if any
+   destination lacks verified evidence.
 6. After approval, create or change only files listed in the approved target file
    map, plus files required by an explicitly documented platform convention that
    the map names. If the approved map conflicts with discovery or the host
@@ -209,6 +237,16 @@ paths. These are examples of where an adapter might live:
 The `.claude/`, `.codex/`, and `.agents/` paths above are not interchangeable
 standards and are not guaranteed to be supported by every version of a platform.
 The adapter must verify the host's current convention before creating them.
+
+For the current evidence behind these examples, consult the official
+[Codex instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md),
+[Codex custom agent](https://learn.chatgpt.com/docs/agent-configuration/subagents),
+and [Codex skill](https://learn.chatgpt.com/docs/build-skills) guidance, plus
+Claude Code's [instruction](https://code.claude.com/docs/en/memory),
+[skill](https://code.claude.com/docs/en/skills), and
+[custom subagent](https://code.claude.com/docs/en/agents) guidance. These links
+are reference evidence only; discovery must record the source, access date,
+platform version, operating mode, and native verification for the actual run.
 
 ## What the applying agent should create
 

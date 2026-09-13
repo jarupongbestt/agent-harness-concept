@@ -62,6 +62,21 @@ application:
     verify_host_capabilities: true
     unknown_policy: stop_and_ask_or_report_blocked
     allow_guessing_paths: false
+    output_shape_guard:
+      required_before_approval: true
+      require_native_layout_preview: true
+      source_tree_reproduction_forbidden: true
+      fail_if_unapproved_source_paths_are_added: true
+      source_tree_paths:
+        - adapters/
+        - knowledge/
+        - prompts/
+        - schemas/
+        - skills/
+      source_paths_allowed_only_when:
+        - already_present_in_target
+        - independently_required_by_target
+        - explicitly_approved
     adapter_output:
       require_native_destinations: true
       unknown_destination_policy: blocked
