@@ -1,6 +1,8 @@
-# Domain Index Template
+# Example Domain Index Template
 
-Use this as the index for a new domain area.
+This is an optional example for a project that chooses the domain/self/derived
+organization. It is not a required knowledge layout. Adapt paths and categories
+to the target project's existing knowledge system.
 
 ## Internal knowledge
 

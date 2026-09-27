@@ -18,11 +18,11 @@ relevant knowledge references, and its approved scope.
 | Intake | Intake Agent | Ticket |
 | Investigation, when needed | A role with the `root-cause` skill | Evidence-backed findings |
 | Planning | Planner Agent | Plan |
-| Test creation, when needed | Test Designer | Test design or test changes |
+| Test creation, when needed | Test Engineer | Test changes derived from acceptance criteria |
 | Implementation | Implementer Agent | Task Result |
 | Mechanical checks | Verifier or platform-native check runner | Verification Result |
 | Independent review | Reviewer Agent | Review Result |
-| Durable learning | Knowledge Curator | Knowledge update summary |
+| Durable learning, when selected | Knowledge Curator | Knowledge update summary |
 
 Do not silently collapse these responsibilities into the Main Agent. If the host
 cannot create subagents, state that limitation in the run summary and preserve the
@@ -44,51 +44,66 @@ names exactly when changing the surrounding language.
 ```text
 User Request
     ↓
-Main Agent → delegate Intake (single-pass by default)
+Main Agent → delegate Intake (single-pass by default; must complete first)
     ↓
-Clarify only when needed → delegate Planner (single-pass by default)
+Clarify only when needed → Planner completes the full Plan (single-pass by default)
     ↓
-User Approval
+User approves the full Plan
     ↓
-Build dependency-aware execution graph
-    ├─ ready, non-conflicting Slice A → Test/Implement → Verify → Review
-    ├─ ready, non-conflicting Slice B → Test/Implement → Verify → Review
-    └─ dependent or conflicting work waits or serializes
+Test Engineer / Builder work only: schedule ready, non-conflicting invocations
+    ├─ Test Engineer and Builder may overlap unless Builder depends on test output
+    └─ independent Test Engineer / Builder slices may overlap
     ↓
-delegate Knowledge Curator → Finalize
+all test/build work completes → Verifier → Reviewer
+    ↓
+Knowledge Curator only if knowledge management or durable learning was requested
+    ↓
+Finalize
 ```
 
-Intake and Planning run once per run by default. Intake may re-enter only when
-user clarification changes the Ticket or newly discovered facts show a Ticket
-mismatch. Planning may re-enter only after explicit human feedback or evidence
-that the approved Plan is invalid, incomplete, contradictory, out of scope, or
-no longer satisfies the Ticket. Ordinary implementation, test, lint, or
-verification failures do not restart either stage.
+Intake must finish before Planning starts. If clarification changes the Ticket,
+complete the necessary Intake update before invoking Planner. Planner creates the
+entire Plan, including all slices and dependencies, before presenting it for
+approval. Do not alternate between planning a slice and implementing it.
 
-After approval, the Main Agent schedules dependency-ready slices concurrently
-when their approved scopes, files, resources, and mutable state do not conflict.
-Dependencies, overlapping files, shared resources, conflicting state, or ordering
-requirements serialize only the affected work; unrelated slices remain eligible
-for parallel execution. “One approved task slice at a time” means one slice per
-Implementer invocation, not one globally serialized slice at a time.
+Intake and Planning run once by default. Intake may re-enter only when user
+clarification changes the Ticket or new facts show a Ticket mismatch. Planning
+may re-enter only for explicit human feedback or objective evidence that the Plan
+or its assumptions are invalid or materially changed. A material Plan change
+requires renewed user approval before work resumes.
 
-An ordinary test or implementation failure routes directly back to the same
-Implementer slice for a bounded retry with the failure evidence and root-cause
-context. Re-planning is reserved for evidence of an invalid Plan or a material
-scope, acceptance-criteria, dependency, permission, or platform change. Any
-materially changed Plan requires renewed user approval before implementation
-resumes.
+Only Test Engineer and Implementer/Builder invocations may overlap active
+specialist work. Schedule their invocations only when dependencies are ready and
+approved scopes, files, resources, mutable state, and ordering constraints do not
+conflict. If a Builder depends on a Test Engineer's output, run that pair in
+sequence. Verifier, Reviewer, Knowledge Curator, and all other specialist work
+must wait until active Test Engineer/Builder work completes; later stages also
+run without overlapping another specialist.
+
+Ordinary implementation, test, lint, build, acceptance, or verification failures
+route to the affected Builder slice for a bounded retry, then escalate when its
+retry budget is exhausted. They never restart Intake or Planning. Re-planning is
+reserved for explicit human feedback or objective evidence that the approved Plan
+or its assumptions are invalid or materially changed.
+
+Knowledge curation and durable knowledge writes are opt-in: run them only when
+the user selects knowledge management or explicitly requests durable learning.
+The example knowledge tree in this source repository is not a default destination
+for run-specific learning.
 
 Before implementation:
 
 1. Read [`README.md`](README.md), [`SPEC.md`](SPEC.md), and the relevant adapter
    instructions.
-2. Read `knowledge/main.md` when a knowledge base exists. Read `knowledge/log.md`
+2. When a knowledge base exists and knowledge management is selected, read its
+   configured or existing startup entry. `knowledge/main.md` is this repository's
+   example path, not a target-project default. Read the configured action log
    only when historical activity, contradictions, recurring failures, audit, or
    lint context is needed; it is not a mandatory startup read.
-3. Delegate Intake and Planning.
-4. Identify slice dependencies and conflicts so independent work can be scheduled
-   in parallel after approval.
+3. Complete Intake, resolve required clarification, then delegate Planner to
+   finish the entire Plan before presenting it for approval.
+4. Identify slice dependencies and conflicts so only Test Engineer and Builder
+   invocations with ready, non-conflicting scopes can overlap after approval.
 5. Present the plan to the user and obtain explicit approval.
 
 No specialist may edit project files before approval. The Main Agent must not infer
@@ -98,7 +113,7 @@ approval from a casual message.
 
 - [`prompts/intake.md`](prompts/intake.md) — Intake Agent
 - [`prompts/planner.md`](prompts/planner.md) — Planner Agent
-- [`prompts/test-designer.md`](prompts/test-designer.md) — Test Designer
+- [`prompts/test-engineer.md`](prompts/test-engineer.md) — Test Engineer
 - [`prompts/implementer.md`](prompts/implementer.md) — Implementer Agent
 - [`prompts/verifier.md`](prompts/verifier.md) — Verifier Agent
 - [`prompts/reviewer.md`](prompts/reviewer.md) — Reviewer Agent
@@ -115,6 +130,46 @@ ask for platform and model choices, propose an adapter map, and avoid treating t
 example folders as a mandatory layout.
 
 ## Skills and provenance
+
+### Canonical role-to-skill map
+
+Roles own responsibilities and artifact contracts; skills provide reusable
+methods. Adapters should materialize selected skills and ensure each role prompt
+names the skill and its trigger. These are the canonical mappings:
+
+| Role | Required skills | Conditional skills | Contract/reference |
+|---|---|---|---|
+| Main Agent | `context-engineering`, `clarification` | `doubt-driven-development` for non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions; `knowledge-base` when that capability is selected | `schemas/artifacts.md` |
+| Intake | `specification`, `clarification`, `source-driven-development` | `root-cause` for bugs or failures; `knowledge-base` when that capability is selected | `schemas/artifacts.md` |
+| Planner | `task-decomposition`, `context-engineering`, `source-driven-development` | `root-cause` for a bug when Intake evidence is incomplete, contradictory, or insufficient to justify the plan; `knowledge-base` when that capability is selected | `schemas/artifacts.md` |
+| Test Engineer | `test-driven-development` | — | `schemas/artifacts.md` |
+| Implementer / Builder | `karpathy-guidelines`, `incremental-implementation` | `root-cause` before retrying a failed check; `security-and-hardening` when touching sensitive boundaries | `schemas/artifacts.md` |
+| Verifier | None | — | `schemas/artifacts.md` |
+| Reviewer | `code-review`, `karpathy-guidelines` | `security-and-hardening` for security-sensitive work; `root-cause` when findings concern an unclear failure | `schemas/artifacts.md` |
+| Knowledge Curator (opt-in) | `knowledge-base`, `documentation-and-adrs` | — | `schemas/artifacts.md` |
+
+`doubt-driven-development` belongs to orchestration: the Main Agent can send the
+smallest relevant artifact and its contract to a fresh-context Reviewer with an
+adversarial review request, reconcile evidence, and bound any follow-up loop. It
+does not instruct a Reviewer to spawn another reviewer. Do not require a
+particular CLI, model provider, or external tool for this portable behavior.
+
+`harness-artifacts` is not a role skill in this map. Artifact shapes and required
+fields live in `schemas/artifacts.md`; adapters may consult the existing
+`harness-artifacts` source only when they need a reusable translation procedure.
+
+When applying this harness, materialize skills only for selected roles and
+capabilities, using exactly one definition per method. Resolve source selection
+from `harness.yaml` before approval: the five direct candidates
+(`context-engineering`, `test-driven-development`, `security-and-hardening`,
+`documentation-and-adrs`, `doubt-driven-development`) use upstream definitions
+when compatibility review passes, with local definitions only as recorded
+fallbacks. Other skills follow their local defaults and optional-method
+mappings. Record the chosen source, resolved full commit SHA, access date, and
+supporting assets in the approval packet. Harness contracts take precedence; a
+body changed for compatibility is a local adaptation. Unsupported native skill
+loading requires an approved translation or explicit omission, never silent
+substitution. See [`APPLY.md`](APPLY.md) for the application procedure.
 
 Roles define **who** owns a stage. Skills define **how** work is performed and may
 be loaded by more than one role. The origin of every listed skill is recorded in

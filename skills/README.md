@@ -7,29 +7,39 @@ native project skill. The source and provenance of every skill in this catalog i
 recorded in [`origins.md`](origins.md). Read that registry before reusing or
 extending a skill, and add a provenance entry for each new one.
 
-Roles define **who is responsible** for a stage. Skills define **how the work is
-performed**. Skills are reusable across roles and platforms.
+Roles define **who is responsible**, their boundaries, and required artifacts.
+Those instructions belong in role prompts. Skills define reusable methods an
+agent loads when a mapping or task trigger calls for them; they are not a second
+copy of the role prompt.
 
 ## Core skills
 
-| Skill | Used by | Purpose | Origin |
+| Skill | Role mapping | Trigger / purpose | Origin |
 |---|---|---|---|
-| context-engineering | Main Agent, Intake, Planner | Keep context focused and progressive | Adapted from template-harness |
-| specification | Intake, Planner | Convert intent into checkable criteria | Synthesized from template-harness + requirements practice |
-| clarification | Main Agent, Intake | Detect and resolve ambiguity | Adapted from template-harness |
-| root-cause | Intake, Planner, Implementer, Reviewer | Trace failures to evidence-backed causes | Adapted from template-harness investigation workflow |
-| task-decomposition | Planner | Split work into safe slices | Adapted from template-harness |
-| source-driven-development | Intake, Planner | Ground decisions in project and external sources | Adapted from knowledge-base |
-| incremental-implementation | Implementer | Make small, reversible changes | Adapted from template-harness |
-| test-driven-development | Test Designer, Implementer | Define behavior and make tests pass | Synthesized from template-harness + test-design practice |
-| code-review | Reviewer | Inspect correctness, scope, and maintainability | Synthesized from template-harness + code-review practice |
-| security-and-hardening | Reviewer, Implementer | Review sensitive boundaries and inputs | Synthesized from template-harness + secure-development practice |
-| documentation-and-adrs | Knowledge Curator | Record decisions and durable knowledge | Adapted from knowledge-base |
-| harness-artifacts | Main Agent, all artifact-producing roles | Produce and validate portable Ticket, Plan, Task Result, Verification Result, and Review Result artifacts | Synthesized in this harness |
-| knowledge-base | Main Agent, Intake, Planner, Knowledge Curator | Navigate, update, and lint the durable knowledge tree | Adapted from knowledge-base |
+| context-engineering | Main Agent, Planner | Required for orchestration and planning; keep context focused and progressive | Adapted from template-harness |
+| specification | Intake | Required for intake; turn intent into checkable criteria | Synthesized from template-harness + requirements practice |
+| clarification | Main Agent, Intake | Required; interview/refine only as needed to resolve material ambiguity | Adapted from template-harness; interview and idea-refinement techniques synthesized |
+| root-cause | Intake, Planner, Implementer, Reviewer | Conditional for bug/failure investigation; Planner uses it when Intake evidence is incomplete, contradictory, or insufficient | Adapted from template-harness investigation workflow |
+| task-decomposition | Planner | Required; split approved work into safe, verifiable slices | Adapted from template-harness |
+| source-driven-development | Intake, Planner | Required; ground decisions in project and external sources | Adapted from knowledge-base |
+| incremental-implementation | Implementer | Required; implement one approved slice with bounded scope | Adapted from template-harness |
+| test-driven-development | Test Engineer | Required when tests are authored or changed; derive behavior from criteria | Synthesized from template-harness + test-design practice |
+| code-review | Reviewer | Required; inspect correctness, scope, regressions, and maintainability | Synthesized from template-harness + code-review practice |
+| security-and-hardening | Reviewer, Implementer | Conditional when work crosses sensitive boundaries | Synthesized from template-harness + secure-development practice |
+| documentation-and-adrs | Knowledge Curator | Required when durable knowledge is updated | Adapted from knowledge-base |
+| knowledge-base | Main Agent, Intake, Planner, Knowledge Curator | Conditional when the knowledge-management capability is selected; use its chosen tree | Adapted from knowledge-base |
+| karpathy-guidelines | Implementer, Reviewer | Required; surface assumptions, minimize complexity, keep edits surgical, verify outcomes | Synthesized from Karpathy's published observations and portable skill practice |
+| doubt-driven-development | Main Agent only | Conditional for non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions; fresh-context adversarial challenge | Adapted from addyosmani/agent-skills; orchestration details made portable |
 
-`root-cause` is intentionally a skill, not a standalone agent. A role loads it
-only when the task needs investigation.
+`root-cause` is a reusable method, not a standalone agent. The same principle
+applies to all skills: the role prompt owns the stage and the skill supplies a
+method only when its trigger applies. `doubt-driven-development` belongs to the
+Main Agent's orchestration and must not be placed in the Reviewer persona.
+
+Artifact schemas are contracts, not required per-role skills. Read
+[`../schemas/artifacts.md`](../schemas/artifacts.md) directly. The existing
+`harness-artifacts` definition is retained only as an optional adapter
+translation reference; it is not assigned to every artifact-producing role.
 
 Domain skills can be added without changing the lifecycle:
 
@@ -48,12 +58,46 @@ stable links and the full provenance rules.
 
 ## Materialization rule
 
-An adapter must use the actual definitions under this directory, not this catalog
-alone. For Codex, each selected definition becomes
-`.agents/skills/<name>/SKILL.md`; for Claude Code, it becomes
-`.claude/skills/<name>/SKILL.md`. The adapter may select all core skills or a
-smaller approved set. For a full harness application, the default is every entry
-listed in `harness.yaml` under `skills.definitions`; a smaller set needs explicit
-omission reasons. It must not claim a skill was installed when its source
-definition is absent. Conditional invocation, such as `root-cause`, does not mean
-conditional installation.
+Use [`../harness.yaml`](../harness.yaml) as the canonical materialization-source
+registry; this catalog records the role methods, purpose, and historical origin.
+Before approval, resolve each selected method to exactly one source, review that
+source for compatibility, and record its repository, path, resolved full commit
+SHA, access date, compatibility decision, and required/included/omitted
+supporting assets in the approval packet. Mutable refs such as `main` must be
+resolved at application time.
+
+The five direct candidates (`context-engineering`, `test-driven-development`,
+`security-and-hardening`, `documentation-and-adrs`, and
+`doubt-driven-development`) use their upstream `SKILL.md` definitions when
+compatibility review passes. Their local definitions are recorded fallbacks
+only when the upstream candidate is unavailable or has a source-specific format
+or compatibility issue and the host can load the local definition natively.
+Lack of a native skill mechanism is not a fallback condition: obtain approval
+for a translation into a supported native mechanism or explicitly omit the
+skill as unsupported. Other skills follow the registry's local defaults and
+optional-method mappings; aliases and same-slug candidates are not automatic
+equivalents.
+
+For the chosen `SKILL.md`, recursively inspect linked files and references.
+Include required skill-local and repository-level files, including root-level
+`references/` assets when referenced; per-skill install commands may omit these.
+Record every asset as required, included, or omitted with an omission reason.
+Harness lifecycle, approval, role, no-commit, concurrency, and artifact
+contracts take precedence over generic skill methods. If the source body itself
+must be changed to comply, record a `local_adaptation` and its upstream
+influence. Never materialize both the upstream and local definition of one
+method.
+
+Materialize only skills needed by selected roles and capabilities. A required
+or conditional role mapping determines which methods are in scope; conditional
+triggers control use, not installation. Optional capability skills (such as
+`knowledge-base`) are included only when that capability is selected. For
+Codex, a verified native destination may be `.agents/skills/<name>/SKILL.md`;
+for Claude Code, it may be `.claude/skills/<name>/SKILL.md`. These are examples,
+not defaults: use only destinations verified for the actual host. If a host has
+no native skill mechanism, obtain approval for a translation into a supported
+native mechanism or explicitly omit the method as unsupported; do not silently
+use a local definition as a substitute. Never silently substitute a different
+source or method, and do not leave prompts referring to a method that was
+omitted or cannot be loaded. The role-to-skill map in
+[`../AGENTS.md`](../AGENTS.md) is canonical.

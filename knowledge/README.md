@@ -1,10 +1,13 @@
-# Knowledge-Base Integration
+# Knowledge-Base Integration Example
 
-The harness treats the knowledge base as persistent project memory, separate from
-temporary run state. This repository includes a small template and example tree so
-that a clone has a usable starting shape.
+The harness treats a knowledge base as persistent project memory, separate from
+temporary run state. The layout below describes this repository's example
+knowledge system. It is not a required target-project layout. When applying the
+harness elsewhere, inspect and preserve the target's existing knowledge root,
+navigation, categories, and protection rules. Use a different layout when the
+target already has one; propose a new location only when needed and approved.
 
-## Canonical layout
+## Example layout in this repository
 
 ```text
 knowledge/
@@ -19,9 +22,10 @@ knowledge/
 └── _example/               # non-authoritative example entries
 ```
 
-`domain/` is the default project-domain area. A project may add more domain
-folders under `knowledge/` when its scope requires them, while retaining
-`main.md` and `log.md` at the knowledge root.
+Here, `domain/` demonstrates one way to separate domain knowledge from the
+navigation and log files. It is not a universal domain directory or a default
+destination for applied projects. Do not create `knowledge/domain/` in a target
+unless inspection shows that it fits the target and the user approves the map.
 
 ## Read path
 
@@ -35,7 +39,7 @@ knowledge/domain/self/<topic>.md or knowledge/domain/derived/<topic>.md
 knowledge/domain/sources/<file> when required
 ```
 
-At the beginning of every run:
+For this repository's workflow, at the beginning of every run:
 
 1. The Main Agent reads `knowledge/main.md`.
 2. Intake uses its navigation hints to identify likely scope.
@@ -55,11 +59,13 @@ validated by the knowledge linter; it is not a transcript or startup memory dump
 - Contradictions are recorded and surfaced; they are not silently overwritten.
 - Indexes contain navigation, not detailed knowledge.
 - The action log records knowledge changes, not complete task transcripts.
-- Run-specific state belongs under `.harness/runs/`, not under durable knowledge.
+- Run-specific state belongs in the separately approved/discovered run-state
+  location, not under durable knowledge. `.harness/runs/` is an example used by
+  this repository; it is not imposed on target projects.
 
 ## Finalization check
 
-Before a non-trivial run ends, ask:
+When knowledge management is selected, before a non-trivial run ends, ask:
 
 ```text
 Did this run teach a durable fact, constraint, decision, procedure, or recurring

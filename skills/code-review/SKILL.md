@@ -13,6 +13,8 @@ evidence—not against personal implementation preference.
 - Inspect tests for meaningful behavior rather than implementation tautologies.
 - Check maintainability and compatibility with existing project conventions.
 - Examine security and data handling when the change crosses a sensitive boundary.
+- Separate observed evidence from assumptions; state uncertainty and request the
+  smallest missing evidence needed to support a finding.
 - Order findings by severity and include concrete file/line evidence.
 
 Do not rewrite the implementation while reviewing it.

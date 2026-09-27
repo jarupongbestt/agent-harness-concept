@@ -1,7 +1,7 @@
 # Portable Agent Harness Specification
 
 Status: concept
-Version: 0.1
+Version: 0.2.0
 
 ## 1. Purpose
 
@@ -79,15 +79,20 @@ mean `CLAUDE.md`, `.claude/agents/`, and `.claude/skills/`. The actual run must
 verify those destinations and must stop when evidence is missing or the proposed
 layout is source-shaped.
 
-The Main Agent executes this lifecycle as a dependency-aware graph, not as a
-globally synchronous queue. Intake and Planning are single-pass stages by
-default. After approval, every ready slice may run concurrently with other ready
-slices when their approved scopes, resources, and state do not conflict. A
-dependency, conflict, or ordering requirement is a reason to wait or serialize;
-it is not a reason to serialize unrelated work. Recovery follows the narrowest
-valid route: retry the affected Implementer slice for an ordinary implementation
-or test failure, and re-plan only when the approved plan or requirements are
-shown to be invalid or materially changed.
+Intake must complete before Planner starts. Planner creates the full Plan, with
+all slices and dependencies, before presenting it for approval; do not alternate
+between planning a slice and implementing it. After approval, only Test Engineer
+and Implementer/Builder invocations may overlap active specialist work. Schedule
+ready invocations concurrently only when approved scopes, files, resources,
+mutable state, and ordering constraints do not conflict. If a Builder depends on
+Test Engineer output, run that pair in sequence. All Test Engineer/Builder work
+must finish before Verifier starts. Verifier, Reviewer, Knowledge Curator, and all
+other specialists run without overlapping active specialist work. Ordinary
+implementation, test, lint, build, acceptance, or verification failures retry
+the affected Builder slice within its bounded budget, then escalate; they never
+restart Intake or Planning. Re-plan only for explicit human feedback or objective
+evidence that the approved Plan or its assumptions are invalid or materially
+changed, and renew approval after a material Plan change.
 
 ### 3.1 User Request
 
@@ -96,12 +101,18 @@ assigns it a `run_id`.
 
 ### 3.2 Intake
 
-The Main Agent delegates Intake to the Intake Agent. The Intake Agent reads the
-`knowledge/main.md` when it exists, then creates a Ticket. It consults
-`knowledge/log.md` only when historical activity, contradictions, recurring
-failures, audit, or lint context is relevant. It identifies the change type,
-scope, acceptance criteria, risk, confidence, and whether clarification is
+The Main Agent delegates Intake to the Intake Agent. When knowledge management
+is selected, Intake follows the target project's configured or existing knowledge
+navigation entry before creating a Ticket. `knowledge/main.md` is this
+repository's example path, not a target-project default. Intake consults the
+target's configured action log only when historical activity, contradictions,
+recurring failures, audit, or lint context is relevant. It identifies the change
+type, scope, acceptance criteria, risk, confidence, and whether clarification is
 required.
+
+Intake completes its Ticket before Planner starts. The Main Agent resolves any
+critical clarification before dispatching Planner. If an answer changes the
+Ticket, Intake completes the corresponding Ticket update before Planner begins.
 
 For bugfixes or unclear failures, Intake loads the `root-cause` skill and performs a
 bounded investigation itself. It must distinguish evidence from assumptions.
@@ -124,18 +135,22 @@ Clarification that does not change the Ticket does not restart Intake or Plannin
 
 ### 3.4 Plan
 
-The Main Agent delegates planning to the Planner Agent. The Planner reads the
+Only after Intake is complete and required clarification is resolved, the Main
+Agent delegates planning to the Planner Agent. The Planner reads the
 Ticket, relevant knowledge pages, source references, and test-impact information. It
 creates an ordered list of small task slices.
 
-For bugfixes, the Planner loads `root-cause` when Intake's evidence is incomplete or
-when the proposed change depends on an unverified cause.
+For bugfixes, the Planner loads `root-cause` when Intake evidence is incomplete,
+contradictory, or insufficient to justify the proposed plan, including when the
+proposed change depends on an unverified cause.
 
-Each slice includes files, dependencies, acceptance criteria, difficulty, and test
-requirements. The Plan also identifies the scopes, resources, mutable state, and
-ordering constraints that control whether slices may run concurrently. A slice is
-ready when its declared dependencies are complete and its approved execution
-scope does not conflict with other work scheduled at the same time.
+The Planner returns the complete Plan before approval: every slice includes
+files, dependencies, acceptance criteria, difficulty, and test requirements.
+The Plan also identifies scopes, resources, mutable state, and ordering
+constraints. Do not begin implementation and then plan remaining slices as work
+proceeds. A slice is ready when its declared dependencies are complete and its
+approved execution scope does not conflict with other work scheduled at the same
+time.
 
 Planning runs once per run by default. The Main Agent may re-enter Planning only
 after explicit human feedback on the Plan, or after evidence shows that the Plan
@@ -159,24 +174,32 @@ Proceed with this plan?
 If the user asks for changes, the Main Agent sends feedback to the Planner and
 repeats the approval step. No agent may edit project files before approval.
 
-Approval authorizes only the reviewed Plan and its declared scopes. After approval,
-the Main Agent builds the dependency-aware execution graph and may dispatch
-independent ready slices concurrently. A re-plan or material scope change pauses
-further edits under the old approval and requires a new approval decision.
+Approval authorizes only the complete reviewed Plan and its declared scopes.
+After approval, the Main Agent builds the dependency-aware execution graph. Only
+Test Engineer and Builder invocations may overlap: multiple ready, non-conflicting
+test or implementation slices may run concurrently. If implementation depends
+on a Test Engineer's output, sequence that pair. Do not run Verifier, Reviewer,
+Knowledge Curator, or another specialist during active Test Engineer/Builder
+work. After that work settles, run verification, then review, serially. A re-plan
+or material scope change pauses further edits under the old approval and requires
+a new approval decision.
 
-### 3.6 Test Design
+### 3.6 Test Engineering
 
-When required, the Main Agent delegates this stage to the Test Designer.
+When required, the Main Agent delegates this stage to the Test Engineer, who
+loads `test-driven-development`.
 
-For a feature or bugfix without matching coverage, the Test Designer creates or
+For a feature or bugfix without matching coverage, the Test Engineer creates or
 extends tests from the acceptance criteria. It should not depend on the
 Implementer's implementation approach.
 
-Test Design dependencies are per slice, not global. Test Design is a prerequisite
-for an Implementer only when that slice's implementation depends on the Test
-Design output. Independent Test Designer work and implementation work may run
-concurrently after approval when their files, resources, and mutable state do not
-conflict. Test Designers do not modify production code.
+Test Engineering dependencies are per slice, not global. Test Engineering is a
+prerequisite for a Builder only when that slice's implementation depends on its
+output. Independent Test Engineer and Builder invocations may run concurrently
+after approval when files, resources, mutable state, dependencies, and ordering
+do not conflict. These are the only specialist roles allowed to overlap; no
+Verifier, Reviewer, Knowledge Curator, or other specialist runs during this
+work. Test Engineers do not modify production code.
 
 For refactors, existing tests are used as regression protection. Cosmetic changes
 may use a smoke or visual check instead of a new unit test.
@@ -184,24 +207,26 @@ may use a smoke or visual check instead of a new unit test.
 ### 3.7 Implement
 
 The Main Agent delegates one approved task slice at a time to each Implementer
-invocation. Multiple Implementer invocations may run concurrently when their
-slices are dependency-ready and have no overlapping files, shared resources,
-conflicting mutable state, or ordering requirement. The Implementer changes only
-the approved scope, follows the acceptance criteria, and returns a structured
-result.
+invocation. Multiple Implementer invocations, and eligible Test Engineer
+invocations, may overlap after approval when slices are dependency-ready and have
+no conflicting files, shared resources, mutable state, or ordering requirements.
+No Verifier, Reviewer, Knowledge Curator, or other specialist may overlap active
+Test Engineer/Implementer work. The Implementer changes only approved scope,
+follows acceptance criteria, and returns a structured result.
 
-If implementation reveals that the plan is incomplete or incorrect, the
-Implementer stops and reports the discrepancy. The Main Agent then sends the work
-back to Plan and, if necessary, reopens approval.
+If implementation reveals that the plan may be incomplete or incorrect, the
+Implementer stops and reports evidence. The Main Agent sends work back to Plan
+only when that evidence objectively shows the approved Plan or its assumptions
+are invalid or materially changed; a material change requires renewed approval.
 
-When a test, acceptance, lint, build, or other check fails, the Implementer loads
-`root-cause` before retrying. If the approved scope, acceptance criteria,
-dependencies, and platform assumptions remain valid, the Main Agent routes the
-failure directly back to the same Implementer slice with the failure artifact and
-root-cause context. The Implementer must report the cause it is addressing rather
-than repeatedly changing code based only on the latest error message. Ordinary
-implementation, test, acceptance, lint, build, check, or verifier failures route
-directly to `retry_implementer` and must not invoke Intake or Planning.
+When an implementation, test, acceptance, lint, build, or verification check
+fails, the Implementer loads `root-cause` before retrying. If the approved scope,
+acceptance criteria, dependencies, and platform assumptions remain valid, route
+the failure directly to the same Implementer slice with failure evidence and
+root-cause context. The Implementer reports the cause it addresses rather than
+changing code from the latest error message alone. Ordinary failures never invoke
+Intake or Planning. After each retry, the relevant work must pass through
+verification again before review proceeds.
 
 Each slice has a finite retry budget recorded in the Plan or run state. When the
 budget is exhausted, the Main Agent stops automatic retries and escalates with the
@@ -211,8 +236,9 @@ scope, criteria, dependencies, permissions, or platform assumptions are invalid.
 
 ### 3.8 Verify
 
-The Main Agent delegates verification to the Verifier Agent when the platform
-supports that role as an isolated subagent. Verify is primarily mechanical. It runs
+Only after all active Test Engineer and Implementer work is complete, the Main
+Agent delegates verification to the Verifier Agent when the platform supports
+that role as an isolated subagent. Verify is primarily mechanical. It runs
 the narrowest useful checks first, followed by affected regression checks:
 
 - unit and integration tests
@@ -222,8 +248,8 @@ the narrowest useful checks first, followed by affected regression checks:
 - acceptance-criteria checks
 - direct and dependent regression tests
 
-The Main Agent decides whether a failure requires a retry, escalation, re-planning,
-or user input.
+No specialist work overlaps verification. The Main Agent decides whether a
+failure requires a retry, escalation, re-planning, or user input.
 
 The Verifier returns a recommended recovery action with its result. It recommends
 `retry_implementer` for an ordinary implementation, test, acceptance, lint,
@@ -238,8 +264,10 @@ the Planner.
 
 ### 3.9 Review
 
-The Main Agent delegates review according to risk. The Reviewer independently checks the changes against the Ticket, approved Plan,
-acceptance criteria, test results, security expectations, and scope.
+After verification completes, the Main Agent delegates review according to risk.
+No other specialist overlaps review. The Reviewer independently checks the
+changes against the Ticket, approved Plan, acceptance criteria, test results,
+security expectations, and scope.
 
 Review depth is risk-based:
 
@@ -249,7 +277,10 @@ Review depth is risk-based:
 
 ### 3.10 Knowledge Update
 
-The Knowledge Curator records durable information learned during the run:
+Knowledge curation is opt-in. Run this stage only when the user selected knowledge
+management or explicitly requested durable learning. Never write run-specific
+learning to this repository's example knowledge tree by default. When selected,
+the Knowledge Curator records durable information learned during the run:
 
 - architectural decisions
 - project conventions
@@ -259,12 +290,14 @@ The Knowledge Curator records durable information learned during the run:
 - testing relationships
 - operational procedures
 
-It does not copy the conversation transcript into the knowledge base.
+It does not copy the conversation transcript into the knowledge base. If the
+stage is omitted, `knowledge_updates: []` is a valid Run Summary.
 
 ### 3.11 Finalize
 
-The Main Agent confirms the final scope, test results, review findings, knowledge
-updates, unresolved risks, and changed files. It returns control to the user.
+The Main Agent confirms the final scope, test results, review findings, any
+selected knowledge updates, unresolved risks, and changed files. It returns
+control to the user.
 
 ## 4. Complexity routing
 
@@ -300,11 +333,11 @@ Suggested default permissions:
 | Main Agent | yes | no or limited | no | delegated | no |
 | Intake | scoped | no | no | no | no |
 | Planner | scoped | no | no | no | no |
-| Test Designer | scoped | no | yes | no | no |
+| Test Engineer | scoped | no | yes | no | no |
 | Implementer | scoped | yes | no | no | no |
 | Verifier | scoped | no | no | no | no |
 | Reviewer | scoped | no | no | no | no |
-| Knowledge Curator | relevant | no | no | yes | no |
+| Knowledge Curator (opt-in) | relevant | no | no | yes | no |
 
 The exact enforcement mechanism belongs to the adapter.
 
@@ -316,6 +349,6 @@ A run is complete when:
 - verification results are available
 - review is complete or intentionally skipped with a reason
 - scope was audited
-- durable knowledge was considered
+- durable knowledge was considered only when selected or explicitly requested
 - no unauthorized git action occurred
 - the Main Agent returned a final summary

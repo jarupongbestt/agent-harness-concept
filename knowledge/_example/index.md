@@ -1,4 +1,4 @@
-# Example Domain Index
+# Example Domain Index (Illustrative)
 
 This example is illustrative only. Replace it with project-specific navigation.
 

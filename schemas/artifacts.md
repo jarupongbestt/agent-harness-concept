@@ -142,6 +142,33 @@ exact native destination, mechanism, and linked discovery evidence.
 concept_map_id: concept-map-123
 discovery_id: discovery-123
 status: unknown               # verified | unknown | blocked; an unknown entry is illustrative
+skill_materializations:
+  - skill: context-engineering
+    selection_status: materialized # materialized | reused_existing | omitted | unsupported
+    materialization_source:
+      kind: local_definition      # upstream_direct | local_definition | local_adaptation | target_existing_definition
+      repository: https://github.com/jarupongbestt/agent-harness
+      path: skills/context-engineering/SKILL.md
+      ref: HEAD                   # mutable name only; record the resolved SHA below
+      resolved_commit_sha: "<full 40-character SHA resolved at application time>"
+      accessed_date: YYYY-MM-DD
+      adapted_from: null          # required for local_adaptation; records upstream influence, not a second materialized source
+    compatibility:
+      status: compatible           # compatible | adapted | incompatible | not_applicable
+      precedence_contracts: [lifecycle, approval, roles, no_commit, concurrency, artifact_contracts]
+      decisions: []
+    supporting_assets:
+      required: []                # records use {path, purpose}
+      included: []                # records use {path, destination}
+      omitted: []                 # each omission requires {path, reason}
+    fallback:
+      used: false
+      from_source: null
+      to_source: null
+      reason: null
+    omission:
+      omitted: false
+      reason: null
 entries:
   - concept: workflow_lifecycle
     action: translate          # reuse | translate | reference | omit
@@ -171,6 +198,26 @@ entries:
     verification_evidence_ref: null
     omission_reason: null
 ```
+
+Each application artifact records one `skill_materializations` item for each
+selected or explicitly omitted skill. A `materialized` or `reused_existing`
+skill has exactly one `materialization_source`; never materialize both a local
+definition and an upstream candidate for the same skill. Resolve and record the
+source's full commit SHA and `accessed_date` at application time. Candidate
+branches such as `main` are mutable references, not locks; do not carry a
+research-time SHA forward as the application's source pin. If an upstream body
+must be changed to meet harness compatibility rules, use `kind: local_adaptation`
+and record the upstream influence under `adapted_from` rather than calling it a
+direct upstream materialization.
+
+`supporting_assets.required` lists non-skill files needed by the selected source;
+`included` records those actually materialized, and each `omitted` asset needs
+an exact path and reason. `fallback.used` is true only when the preferred source
+was unavailable or incompatible and a different single source was selected;
+record both sources and the reason. If no skill source is materialized, use an
+applicable `selection_status`, set `materialization_source: null`, and set
+`omission.omitted: true` with a reason. Never report a silent fallback or
+omission.
 
 An `omit` entry must include `omission_reason`. A `reference` entry points to
 source material without creating a target destination; `source_material_refs`
@@ -261,6 +308,19 @@ summary: "Add server-side OAuth state handling and callback validation"
 execution:
   scheduler: dependency_aware
   parallel_independent_slices: true
+  lifecycle:
+    intake_complete_before_planner: true
+    full_plan_complete_before_approval: true
+    full_plan_complete_before_implementation: true
+  parallel_specialist_roles: [test_engineer, implementer]
+  specialist_overlap_constraints:
+    only_listed_roles_may_overlap_active_specialist_work: true
+    dependencies_must_be_ready: true
+    scopes_files_resources_mutable_state_and_ordering_must_not_conflict: true
+    sequence_builder_after_test_when_builder_depends_on_test_output: true
+    verifier_reviewer_knowledge_curator_and_other_specialists_overlap_active_work: false
+    all_test_engineer_and_implementer_work_completes_before_verification: true
+    verification_completes_before_review: true
   default_mode: in_place_uncommitted
   retry_policy:
     max_retries_per_slice: 2
@@ -278,6 +338,11 @@ execution:
       - dependency_invalidation
       - permission_invalidation
       - platform_invalidation
+    ordinary_failure_route: retry_affected_implementer_slice
+    ordinary_failures_restart_intake_or_planner: false
+    exhausted_retry_route: escalate
+    replan_requires_explicit_feedback_or_objective_plan_invalidation: true
+    material_replan_requires_renewed_approval: true
   reentry_policy:
     intake:
       default_passes: 1
@@ -286,6 +351,8 @@ execution:
         - newly_discovered_ticket_mismatch
     planner:
       default_passes: 1
+      full_plan_before_approval: true
+      full_plan_before_implementation: true
       allowed_triggers:
         - explicit_human_plan_feedback
         - invalid_plan
@@ -335,13 +402,17 @@ assumptions: []
 ```
 
 `depends_on` defines readiness: a task with no dependencies is ready when the
-plan is approved, and a task with dependencies is ready only after all listed
-tasks complete. `parallel_eligible` permits concurrent scheduling only after
-readiness and conflict checks pass. Overlapping files, shared resources,
-conflicting mutable state, or ordering constraints serialize the affected tasks;
-`test_subtask.file` is part of the slice's scheduled file scope and must be
-included in `conflict_checks.files` or equivalent conflict analysis. These fields
-describe the contract and do not implement a scheduler.
+full Plan is approved, and a task with dependencies is ready only after all
+listed tasks complete. `parallel_eligible` permits concurrent scheduling only
+for Test Engineer and Implementer invocations after readiness and conflict
+checks pass. A Builder that depends on test output waits for that Test Engineer
+task. Overlapping files, shared resources, conflicting mutable state, or ordering
+constraints serialize the affected tasks; `test_subtask.file` is part of the
+slice's scheduled file scope and must be included in `conflict_checks.files` or
+equivalent conflict analysis. Verifier, Reviewer, Knowledge Curator, and other
+specialists never overlap active specialist work; verification follows all
+test/build work, and review follows verification. These fields describe the
+contract and do not implement a scheduler.
 
 ## Task Result
 
@@ -481,8 +552,7 @@ native_post_write_verification:
       confidence: high
       result: verified
   limitations: []
-knowledge_updates:
-  - knowledge/auth/self/oauth-state.md
+knowledge_updates: []       # valid when knowledge curation was omitted or had no durable updates
 unresolved_risks: []
 ```
 
@@ -498,3 +568,9 @@ loaded, invoked, or enforced. Discovery or mapping with `unknown` or `blocked`
 status also forbids `approval.decision: proceed` and target writes. All existing
 Run Summary fields retain their prior meanings, including `reentry`, `retries`,
 `parallel_groups`, `serialized_conflicts`, and `replan_reasons`.
+
+Knowledge curation and durable knowledge writes are opt-in: include paths in
+`knowledge_updates` only when the user selected knowledge management or explicitly
+requested durable learning and updates were recorded. Otherwise `knowledge_updates: []`
+is valid, including when the Knowledge Curator was omitted. Do not write run-specific
+learning to this source repository's example knowledge tree by default.

@@ -137,6 +137,38 @@ for the actual host.
 
 ## Application protocol
 
+### Choose an adoption scope
+
+Applying the harness is a selection, not an all-or-nothing installation. After
+the read-only discovery gate, identify the smallest set of capabilities that
+meets the user's request. Offer these scopes when the request does not already
+specify one:
+
+| Scope | Includes | Does not imply |
+|---|---|---|
+| Full workflow | Lifecycle, selected specialist roles, artifacts, approval, verification, and any selected knowledge/run-state capabilities | Copying this repository's directory layout or every optional capability |
+| Selected capability | Only the named capability, such as knowledge management | Installing lifecycle stages, agents, or run-state storage |
+| Selected roles | Only the named roles and their required contracts/skills | Installing unrelated roles or the full lifecycle |
+
+For every selected item, record `reuse`, `translate`, `reference`, or `omit`,
+its dependencies, and the target-native destination/mechanism where applicable.
+Record every unselected or omitted item with a reason such as user choice,
+existing equivalent, or unsupported host feature. Do not silently expand scope.
+When the user selects Planner plus Builder/Implementer, include only the minimal
+Main Agent coordinator needed to route their work and enforce the approval gate;
+explain this dependency and do not install other lifecycle roles by implication.
+Knowledge management can be selected by itself and must not imply lifecycle or
+agent installation.
+
+Inspect the target project and platform before asking scope or configuration
+questions. Ask only questions still unresolved by that inspection and relevant
+to the selected scope. A full workflow can require a coordinator/model policy;
+a knowledge-only setup generally needs the knowledge location and write/lint
+policy, not agent model choices or run-state configuration. Do not ask blanket
+model, knowledge, or run-state questions for capabilities the user did not select.
+If a required decision is already evident from the target's existing setup,
+preserve it and record the evidence rather than asking again.
+
 When the user asks to apply this harness:
 
 1. Complete the read-only Native Convention Discovery gate above. Inspect both
@@ -149,34 +181,33 @@ When the user asks to apply this harness:
    requirements, role prompts, artifact contracts, and skill provenance registry
    as source material for translation. Do not treat any source path as a path to
    copy into the target.
-3. Only after discovery passes, create a target-specific concept map before
-   proposing implementation. For every relevant portable concept, mark one
-   action: `reuse` an existing target mechanism, `translate` the concept into a
-   target-native mechanism, `reference` the source without copying it, or `omit`
-   it. Every `reuse` or `translate` entry must point to the discovery evidence
-   for its exact native destination and mechanism. Every `omit` entry must
-   include a reason, such as unsupported host capability, existing equivalent,
-   or explicit user choice. The map must identify the target-native destination
-   for every `reuse` or `translate` entry. At minimum, cover workflow/lifecycle,
-   specialist roles, artifacts, approval, model policy, permissions,
-   verification, knowledge, run state, and provenance. Keep the
-   `reuse`/`translate`/`reference`/`omit` action for each covered concept, and
-   record a reason for every omission.
-4. Ask the user to choose or confirm:
-   - target platform(s), such as Claude, Codex, OpenCode, Hermes, or a combination;
-   - whether to preserve or migrate existing agent instructions;
-   - the model policy for the Main Agent and each subagent role;
-   - whether the user approves creating or changing the knowledge and run-state
-     directories.
-5. Propose a small platform-specific file map derived only from the target
-   inventory, the approved concept choices, and verified discovery evidence. Get
-   explicit user approval for both the map and any model, knowledge, or run-state
-   decisions before writing, generating, installing, or changing anything in the
-   target. A guessed, stale, or contradictory destination must not appear in the
-   map.
+3. Inventory relevant concepts and existing equivalents after discovery, without
+   yet proposing target writes. Identify capability and role dependencies that
+   affect the user's requested scope.
+4. Confirm the adoption scope (full workflow, selected capabilities, and/or
+   selected roles) only if the request and inspection do not establish it. Ask
+   only for unresolved choices required by that scope, such as how to handle a
+   conflicting instruction file, a needed coordinator/model policy, or a new
+   knowledge location when no usable knowledge system exists. Preserve existing
+   model, knowledge, and run-state policies when they already fit. Knowledge
+   location changes require explicit user approval; an existing compatible
+   knowledge system can be reused without creating a new layout.
+5. Create the target-specific concept map and propose a small platform-specific
+   file map derived only from the target inventory, selected scope, and verified
+   discovery evidence. Get explicit user approval for the map, selected scope,
+   and any required model, knowledge, or run-state decisions before writing,
+   generating, installing, or changing anything in the target. A guessed, stale,
+   or contradictory destination must not appear in the map.
    Include a native layout preview and a source-tree-copy audit in the approval
-   packet. Approval is invalid if that preview is source-shaped or if any
-   destination lacks verified evidence.
+   packet. For each selected skill, resolve its source using the candidate and
+   default policy in [`harness.yaml`](harness.yaml), compatibility-review the
+   actual source body, and inspect its required supporting assets before asking
+   for approval. The approval packet must name the exact selected source,
+   repository, path, resolved full commit SHA, access date, compatibility
+   decision, and required/included/omitted assets for each skill. A branch such
+   as `main` is a mutable lookup reference, not the revision approval is based
+   on. Approval is invalid if the preview is source-shaped, any destination
+   lacks verified evidence, or any selected skill source/revision is unresolved.
 6. After approval, create or change only files listed in the approved target file
    map, plus files required by an explicitly documented platform convention that
    the map names. If the approved map conflicts with discovery or the host
@@ -186,16 +217,52 @@ When the user asks to apply this harness:
    instructions. The bootstrap must tell the host to use specialist subagents
    when supported.
 7. Translate or selectively reuse the role prompts and skills named in the map;
-   do not copy this concept's example paths blindly. For every selected skill,
-   read its actual `skills/<name>/SKILL.md` source definition and materialize it
-   at the verified native destination. A catalog row without a source definition
-   is an adapter error and must be reported, not silently skipped. For a full
-   harness application, materialize every entry in `harness.yaml` under
-   `skills.definitions`; `root-cause` is conditional at invocation time, not at
-   installation time. Omitting a definition requires an explicit reason in the
-   approved concept map.
-8. Connect the target project's knowledge base, if it has one, using the
-   knowledge read/write contract and only with the approved knowledge scope.
+   do not copy this concept's example paths blindly. Select only the skills
+   required or conditionally mapped to selected roles and the skills needed by
+   selected capabilities; a conditional invocation trigger controls when a role
+   uses a skill, not whether it is installed. Do not install skills for
+   unselected roles or capabilities. For each selected skill, use exactly one
+   definition and follow its `harness.yaml` materialization policy: the five
+   direct candidates
+   (`context-engineering`, `test-driven-development`, `security-and-hardening`,
+   `documentation-and-adrs`, and `doubt-driven-development`) default to the
+   upstream `SKILL.md` at a resolved full commit SHA when compatibility review
+   passes. Use that skill's local definition only as a recorded fallback when
+   the upstream candidate is unavailable or has a source-specific format or
+   compatibility issue, and the host can load the local definition natively.
+   Lack of a native skill mechanism is not a fallback condition: get approval
+   for a translation into a supported native mechanism or explicitly omit the
+   skill as unsupported. Other skills follow their local defaults and
+   optional-method mappings in `harness.yaml`; a same-slug candidate or alias
+   is not automatic equivalence.
+
+   Read the chosen `SKILL.md` and recursively inspect its linked files and
+   references. Include every required skill-local asset and any required
+   repository-level asset (including root-level `references/` where the source
+   expects it); a per-skill install command may omit repository-level assets.
+   Record required, included, and omitted assets with reasons. Re-check the
+   selected source against harness lifecycle, approval, roles, no-commit,
+   concurrency, and artifact contracts. These contracts take precedence over
+   generic skill methods. If the body itself must be changed to comply, classify
+   the single selected definition as a `local_adaptation` and record its upstream
+   influence; do not call it a direct upstream copy or also install a second
+   definition.
+
+   If the host has no native skill mechanism, get approval for a translation
+   into a supported native mechanism or explicitly omit the skill as
+   unsupported; do not silently use a local definition as a substitute. Never
+   substitute a different source or method silently. Do not leave prompts
+   referring to an unavailable or omitted skill. A catalog row without a source
+   definition is an adapter error and must be reported, not silently skipped.
+8. Connect the target project's knowledge base only when knowledge management
+   is selected. Preserve and use its discovered existing location, navigation,
+   categories, and protection rules. The source repository's `knowledge/domain/`
+   tree is an example of one possible organization, not a default or required
+   destination. If the target has no suitable knowledge system, propose a
+   project-appropriate location and structure and obtain approval before creating
+   it. Configure the curator and skills with the discovered/approved paths;
+   never leave source-example paths hardcoded in target instructions. If
+   knowledge management is omitted, do not create or modify knowledge files.
 9. Validate the applied adapter, including a native post-write verification that
    the platform actually recognizes, loads, invokes, or enforces each written
    destination and mechanism. File existence alone is not verification. Use the
@@ -286,15 +353,25 @@ unless the target platform requires it and the approved map names it. Do not add
 files merely to mirror this repository's `prompts/`, `schemas/`, `skills/`,
 `knowledge/`, or `adapters/` directories.
 
+For a selected-role setup, materialize only those role responsibilities and
+their dependencies. Contracts can be referenced from the selected bootstrap or
+role guidance rather than copied into a schema tree. For a capability-only
+setup, materialize only that capability's native integration; in particular,
+knowledge management alone does not require a bootstrap lifecycle or specialist
+agent unless the user selected one or the host needs a minimal integration point.
+
 Do not create a separate Investigator agent by default. Load `root-cause` as a
 skill in the role that needs it unless the target platform has a specific reason to
 make investigation a separate subagent.
 
-## Model selection is a user decision
+## Model selection is scope-dependent
 
-The applying agent must ask about models before generating platform-specific
-configuration. Model names, availability, pricing, and reasoning controls change
-over time, so this repository must not hard-code a permanent model name.
+When the selected scope needs model assignments and the target does not already
+define a suitable policy, the applying agent must ask before generating
+platform-specific configuration. Do not ask or add model configuration for
+knowledge-only or other scopes that do not create agents. Model names,
+availability, pricing, and reasoning controls change over time, so this repository
+must not hard-code a permanent model name.
 
 Ask a question like:
 
