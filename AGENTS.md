@@ -91,6 +91,13 @@ the user selects knowledge management or explicitly requests durable learning.
 The example knowledge tree in this source repository is not a default destination
 for run-specific learning.
 
+When knowledge management is selected, retain evidence-backed information that
+will help future work. Read the relevant existing knowledge before deciding what
+to change; consider updating or merging it before appending new material. A
+no-change result is valid when nothing durable is gained. Use the
+[`knowledge-base` skill](skills/knowledge-base/SKILL.md) for curation decisions,
+contradictions, and scoped reorganization.
+
 Before implementation:
 
 1. Read [`README.md`](README.md), [`SPEC.md`](SPEC.md), and the relevant adapter
