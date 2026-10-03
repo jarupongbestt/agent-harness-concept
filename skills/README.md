@@ -26,15 +26,22 @@ copy of the role prompt.
 | test-driven-development | Test Engineer | Required when tests are authored or changed; derive behavior from criteria | Synthesized from template-harness + test-design practice |
 | code-review | Reviewer | Required; inspect correctness, scope, regressions, and maintainability | Synthesized from template-harness + code-review practice |
 | security-and-hardening | Reviewer, Implementer | Conditional when work crosses sensitive boundaries | Synthesized from template-harness + secure-development practice |
-| documentation-and-adrs | Knowledge Curator | Required when durable knowledge is updated | Adapted from knowledge-base |
-| knowledge-base | Main Agent, Intake, Planner, Knowledge Curator | Conditional when the knowledge-management capability is selected; use its chosen tree | Adapted from knowledge-base |
+| documentation-and-adrs | Knowledge Curator | Required for every full-workflow knowledge assessment and included partial knowledge scope | Adapted from knowledge-base |
+| knowledge-base | Main Agent, Intake, Planner, Knowledge Curator | Required for full workflow and partial scopes including knowledge; use the configured system | Adapted from knowledge-base |
 | karpathy-guidelines | Implementer, Reviewer | Required; surface assumptions, minimize complexity, keep edits surgical, verify outcomes | Synthesized from Karpathy's published observations and portable skill practice |
 | doubt-driven-development | Main Agent only | Conditional for non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions; fresh-context adversarial challenge | Adapted from addyosmani/agent-skills; orchestration details made portable |
+| [human-readable-communication](human-readable-communication/SKILL.md) | Main Agent only | Conditional for long or complex explanations, user-facing Plan presentations, and reports; preserve meaning while making the presentation easier to follow | Local adaptation of danyuchn/asd-ste100-skill v0.4.0; relaxed and language-aware |
 
 `root-cause` is a reusable method, not a standalone agent. The same principle
 applies to all skills: the role prompt owns the stage and the skill supplies a
 method only when its trigger applies. `doubt-driven-development` belongs to the
 Main Agent's orchestration and must not be placed in the Reviewer persona.
+
+`human-readable-communication` guides the Main Agent's user-facing presentation.
+Short messages use the bootstrap policy; specialist English artifacts keep their
+contracts. Its local definition is the materialization default, not a sixth
+direct upstream candidate. See [`origins.md`](origins.md) for the pinned influence,
+retained license, and intentionally omitted upstream assets.
 
 Artifact schemas are contracts, not required per-role skills. Read
 [`../schemas/artifacts.md`](../schemas/artifacts.md) directly. The existing
@@ -90,9 +97,12 @@ method.
 
 Materialize only skills needed by selected roles and capabilities. A required
 or conditional role mapping determines which methods are in scope; conditional
-triggers control use, not installation. Optional capability skills (such as
-`knowledge-base`) are included only when that capability is selected. For
-Codex, a verified native destination may be `.agents/skills/<name>/SKILL.md`;
+triggers control use, not installation. The full workflow includes knowledge
+management and its skills automatically. A partial scope may select knowledge
+management independently; selected roles outside that capability may omit
+`knowledge-base` with an explicit outside-scope reason. This is an adoption
+boundary, not a per-run opt-in. For Codex, a verified native destination may be
+`.agents/skills/<name>/SKILL.md`;
 for Claude Code, it may be `.claude/skills/<name>/SKILL.md`. These are examples,
 not defaults: use only destinations verified for the actual host. If a host has
 no native skill mechanism, obtain approval for a translation into a supported

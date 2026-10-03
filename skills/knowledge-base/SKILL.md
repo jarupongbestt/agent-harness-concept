@@ -12,8 +12,10 @@ repository's `knowledge/domain/` tree is an example only.
 
 ## Read
 
-- Read the configured knowledge startup entry at run startup when the selected
-  capability requires it.
+- In the full workflow, Main Agent, Intake, and Planner load this skill and read
+  the configured knowledge startup entry, then follow relevant navigation. Apply
+  the same rule when partial adoption includes knowledge management; a partial
+  scope without it may explicitly omit the skill as outside adoption scope.
 - Follow that entry's navigation to the relevant index and topic; do not presume
   any particular folder or filename.
 - Read the configured action log only for historical activity, contradictions,
@@ -22,9 +24,12 @@ repository's `knowledge/domain/` tree is an example only.
 
 ## Write
 
-Curate only when knowledge management or durable learning is selected. Retain
-evidence-backed information that will help a future task or decision. Exclude
-session diaries, transcripts, redundant explanations, facts obvious from the
+The full workflow always assesses durable learning after review and retains
+eligible evidence-backed new knowledge in the approved configured system, without
+a separate per-run opt-in. Knowledge management may also be adopted independently;
+that adoption does not require agents, model choices, or persisted run state.
+Retain evidence-backed information that will help a future task or decision.
+Exclude session diaries, transcripts, redundant explanations, facts obvious from the
 code, and unsupported claims.
 
 ### Choose the change
@@ -32,8 +37,9 @@ code, and unsupported claims.
 Read the relevant existing pages before deciding, checking for equivalent meaning
 even when wording or titles differ. Choose the smallest useful change:
 
-- **Skip** when the information is temporary, unsupported, already covered, or
-  offers no durable value. No change is a valid result.
+- **Skip** when the information is temporary, unsupported, already covered,
+  obvious from code, or offers no durable value. Report `no_change` with a reason
+  after assessment; absence of writes alone does not establish no learning.
 - **Update** when an existing page is the right home for a correction, new
   evidence, or a useful qualification.
 - **Merge** when overlapping material would be easier to find and maintain in
@@ -41,6 +47,17 @@ even when wording or titles differ. Choose the smallest useful change:
 - **Split** when a page mixes distinct topics and separating them improves
   retrieval without losing their relationships.
 - **Create** when useful durable information has no suitable existing home.
+
+### Report the outcome
+
+Use the Knowledge Outcome contract in `schemas/artifacts.md`. Always include a
+reason, evidence, completed files, applicable checks, and remaining work. `updated`
+requires completed eligible writes and passed applicable checks. Missing approved
+paths or write rules, failed writes, and failed checks are `blocked` with remaining
+work, never `no_change`; do not invent paths or write outside approved scope.
+Report completed partial writes without implying retention finished. A partial
+adoption without knowledge reports `outside_scope` explicitly. An empty
+`knowledge_updates` list does not prove assessment or completion.
 
 ### Resolve contradictions
 

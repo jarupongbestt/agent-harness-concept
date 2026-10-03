@@ -146,7 +146,7 @@ specify one:
 
 | Scope | Includes | Does not imply |
 |---|---|---|
-| Full workflow | Lifecycle, selected specialist roles, artifacts, approval, verification, and any selected knowledge/run-state capabilities | Copying this repository's directory layout or every optional capability |
+| Full workflow | Lifecycle, specialist roles, artifacts, approval, verification, and knowledge management with post-review assessment and retention; run-state storage when required | Copying this repository's directory layout or every optional capability |
 | Selected capability | Only the named capability, such as knowledge management | Installing lifecycle stages, agents, or run-state storage |
 | Selected roles | Only the named roles and their required contracts/skills | Installing unrelated roles or the full lifecycle |
 
@@ -157,8 +157,13 @@ existing equivalent, or unsupported host feature. Do not silently expand scope.
 When the user selects Planner plus Builder/Implementer, include only the minimal
 Main Agent coordinator needed to route their work and enforce the approval gate;
 explain this dependency and do not install other lifecycle roles by implication.
-Knowledge management can be selected by itself and must not imply lifecycle or
-agent installation.
+Full-workflow adoption includes knowledge management automatically: Main Agent,
+Intake, and Planner use configured navigation and `knowledge-base`, and after
+review the Knowledge Curator assesses every run and retains eligible durable
+learning. There is no separate per-run opt-in. Knowledge management can also be
+selected by itself and must not imply lifecycle, agent, model, or run-state
+installation. A selected-role or capability scope without knowledge may omit its
+skills and integration only as outside adoption scope, with an explicit reason.
 
 Inspect the target project and platform before asking scope or configuration
 questions. Ask only questions still unresolved by that inspection and relevant
@@ -254,15 +259,23 @@ When the user asks to apply this harness:
    substitute a different source or method silently. Do not leave prompts
    referring to an unavailable or omitted skill. A catalog row without a source
    definition is an adapter error and must be reported, not silently skipped.
-8. Connect the target project's knowledge base only when knowledge management
-   is selected. Preserve and use its discovered existing location, navigation,
-   categories, and protection rules. The source repository's `knowledge/domain/`
+8. Connect the target project's knowledge base for every full-workflow adoption
+   and for partial adoption that includes knowledge management. Preserve and use
+   its discovered existing location, navigation, categories, and protection rules.
+   The source repository's `knowledge/domain/`
    tree is an example of one possible organization, not a default or required
    destination. If the target has no suitable knowledge system, propose a
    project-appropriate location and structure and obtain approval before creating
    it. Configure the curator and skills with the discovered/approved paths;
    never leave source-example paths hardcoded in target instructions. If
-   knowledge management is omitted, do not create or modify knowledge files.
+   a partial scope excludes knowledge management, do not create or modify
+   knowledge files and report `outside_scope` with a reason. Full workflow must
+   configure knowledge management rather than silently omit it. Missing approved
+   paths or write rules block retention; never invent a layout. Report a Knowledge
+   Outcome with reason: `updated` after writes and applicable checks complete,
+   `no_change` after assessment finds no eligible durable learning, or `blocked`
+   with remaining work for missing configuration or failed writes/checks. An
+   empty `knowledge_updates` list alone cannot prove assessment.
 9. Validate the applied adapter, including a native post-write verification that
    the platform actually recognizes, loads, invokes, or enforces each written
    destination and mechanism. File existence alone is not verification. Use the
@@ -340,8 +353,8 @@ list or one-file-per-role layout:
 - mappings for the portable skills in [`skills/README.md`](skills/README.md) when
   the target has compatible skill support. The source definitions are the
   corresponding `skills/*/SKILL.md` files, not the catalog alone;
-- knowledge integration only when the target uses a knowledge base and the user
-  approves its scope. When approved, use the knowledge contract and its
+- knowledge integration for full workflow and partial scopes that include it,
+  using discovered or approved configuration. Use the knowledge contract and its
   `knowledge/main.md`, `knowledge/log.md`, and domain template/example as source
   material rather than copying unrelated concept files;
 - run-state storage only when the target needs persisted execution artifacts and

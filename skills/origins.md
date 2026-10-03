@@ -66,12 +66,45 @@ it does not establish authorship, origin, equivalence, or compatibility.
 | `knowledge-base` | Adapted | [knowledge-base](https://github.com/jarupongbestt/knowledge-base) | Navigate, update, and lint the durable knowledge tree |
 | `karpathy-guidelines` | Synthesized | [Andrej Karpathy's observations](https://x.com/karpathy/status/2015883857489522876); [portable skill reference](https://github.com/multica-ai/andrej-karpathy-skills/tree/main/skills/karpathy-guidelines) | Think before acting, choose the simplest sufficient solution, keep edits surgical, and verify observable outcomes; rewritten as a concise portable skill |
 | `doubt-driven-development` | Adapted | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development) | Main-Agent orchestration that sends a minimal packet for fresh-context adversarial review, reconciles evidence, and bounds follow-up; no mandatory external CLI/model |
+| `human-readable-communication` | Local adaptation | [danyuchn/asd-ste100-skill v0.4.0](https://github.com/danyuchn/asd-ste100-skill/blob/7d4a135a199a5d7447c4886bcd7ffe742a627bc9/SKILL.md) | Familiar words, clear actors, focused topics, stable terms, and conditions beside actions; rewritten as a relaxed, language-aware Main Agent presentation method that preserves meaning and harness contracts |
 | `frontend-ui` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `api-design` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `database-migrations` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `data-pipelines` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `cloud-infrastructure` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `observability` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
+
+## Human-readable communication adaptation
+
+The upstream influence is `danyuchn/asd-ste100-skill`, `SKILL.md` v0.4.0,
+resolved at commit `7d4a135a199a5d7447c4886bcd7ffe742a627bc9` and accessed
+2026-10-02. The inspected source assets were `SKILL.md`,
+`references/writing-rules.md`, `examples/before-after.md`, `scripts/ste-lint.py`,
+and `LICENSE`. This is a `local_adaptation`, not a direct upstream copy or an
+ASD-STE100 compliance claim. Its materialization default is the single
+[local definition](human-readable-communication/SKILL.md); the five existing
+direct candidates retain their policies. Applications still resolve the chosen
+local source and supporting assets before approval.
+
+The adaptation retains the clarity principles while removing an approved English
+dictionary requirement, strict English grammar, and enforced word caps. English
+20-word instruction and 25-word description targets are optional editing prompts.
+An informal "80%" aim is not a measured score. Thai and mixed-language prose use
+natural local phrasing, with longer sentences or passive voice where useful.
+Meaning, evidence, uncertainty, and obligations take priority over brevity.
+
+Supporting-asset decisions:
+
+- `LICENSE`: required and included as
+  [human-readable-communication/LICENSE](human-readable-communication/LICENSE),
+  preserving the full MIT notice and `Copyright (c) 2026 Dustin Yuchen Teng`.
+- `references/writing-rules.md`: omitted; its strict English summary is replaced
+  by the self-contained, relaxed local method.
+- `examples/before-after.md`: omitted; some examples change obligation or add
+  content, which conflicts with meaning preservation.
+- `scripts/ste-lint.py`: omitted; hard English word caps and punctuation checks
+  are incompatible with the approved multilingual method. No replacement linter
+  or automatic rewriting mechanism is introduced.
 
 ## Provenance rules for future skills
 

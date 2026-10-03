@@ -16,7 +16,10 @@ application:
     record_unselected_and_omitted: true
     record_dependencies: true
     planner_and_implementer_require_minimal_main_agent_coordinator: true
+    full_workflow_includes_knowledge_management: true
     knowledge_only_installs_lifecycle_or_agents: false
+    knowledge_only_requires_models_or_run_state: false
+    partial_scope_without_knowledge_reports: outside_scope
     ask_choices_only_when_required_by_selected_scope: true
     preserve_existing_equivalents_when_suitable: true
   require_user_choices_before_adapter_changes:
@@ -27,7 +30,7 @@ application:
     conditional_on_selected_scope:
       existing_instruction_migration: "Ask only if a conflict or migration decision remains unresolved."
       model_policy: "Ask only if the selected scope creates agents and no suitable policy already exists."
-      knowledge_location: "Ask only if knowledge management is selected and no suitable existing system can be reused; approval is required before creating or moving it."
+      knowledge_location: "Ask only if full workflow or partial adoption includes knowledge management and no suitable existing system can be reused; approval is required before creating or moving it."
       run_state_location: "Ask only if selected capabilities require persisted run state and no suitable existing location exists."
   model_names_are_time_sensitive: true
   native_convention_discovery:
@@ -190,6 +193,76 @@ main_agent:
     - routing
     - recovery
     - finalization
+  intent_gate:
+    before: intake
+    classifier: meaning_and_conversation_context_not_punctuation
+    direct_answer:
+      includes: [informational_questions, explanations, discussion, status_requests]
+      lookup: minimal_read_only_when_needed_for_answer
+      creates_new_run_ticket_plan_or_specialist_invocation: false
+      enters_full_lifecycle: false
+      requires_per_message_knowledge_curation: false
+    execution:
+      includes: [clear_action_requests, action_phrased_as_question, substantial_explicitly_requested_audits_or_research]
+      action_question_example: "can you fix this?"
+      new_independent_objective: route_to_intake
+      continuation: advance_next_authorized_stage_in_existing_run
+    active_authorized_run:
+      questions: answer_then_resume_same_work
+      preserve: [run_id, ticket, plan, run_state, authorized_work]
+      question_alone_cancels_restarts_or_reenters_stages: false
+      changed_requirements:
+        triggers_source: workflow.reentry
+        require_recorded_trigger_evidence_and_changed_artifact: true
+        material_plan_change_requires_renewed_approval: true
+    contextual_affirmative:
+      example: "Ok"
+      after_factual_explanation: acknowledgement_no_edits
+      after_concrete_actionable_proposal:
+        meaning: approach_selection
+        action: advance_necessary_authorized_intake_and_planning
+        project_edits_require_complete_plan_approval: true
+      after_actual_approval_request_for_presented_complete_plan:
+        meaning: explicit_plan_approval
+        action: proceed_with_approved_work
+        duplicate_approval_request: false
+  communication_policy:
+    audience: user_facing
+    lead_with: outcome_action_or_decision
+    language: follow_user_input_and_natural_mix
+    tone: follow_user_preference
+    clarity: "Use familiar words, clear actors, focused topics, stable terms, and conditions beside the actions they govern."
+    preserve: [facts, numbers, units, negation, exceptions, evidence, confidence, uncertainty, obligations]
+    preserve_exact: [technical_names, code, paths, commands, quoted_text, artifact_fields]
+    short_messages: lightweight_bootstrap_policy
+    detailed_skill: human-readable-communication
+    detailed_skill_trigger: "long or complex explanations, user-facing Plan presentations, and reports"
+    automatically_rewrite_specialist_artifacts: false
+    changes_roles_artifact_fields_approval_or_lifecycle: false
+    guarantees_underlying_content_truth: false
+  run_continuity:
+    same_objective:
+      reuse: [run_id, ticket, plan, run_state]
+      continuation_examples:
+        - questions
+        - clarifications
+        - approvals
+        - selection_of_an_approach
+        - research_to_implementation
+      ticket_or_plan_revision_requires_permitted_trigger: true
+      routine_progress_and_task_results_use_existing_run_state: true
+    new_run:
+      allowed_for: independent_objective
+      may_bypass_stage_reentry_rules: false
+    before_stage_reentry:
+      record:
+        - exact_permitted_trigger
+        - supporting_evidence
+        - changed_requirement_assumption_or_artifact
+      permitted_triggers_source: workflow.reentry
+    missing_implementation_detail:
+      planner_update_requires_existing_permitted_trigger: true
+      fresh_intake_when_ticket_unchanged: false
 
 workflow:
   stages:
@@ -210,11 +283,28 @@ workflow:
     implementation_begins_only_after_full_plan_approval: true
     verify_after_all_test_engineer_and_builder_work: true
     review_after_verification: true
-  optional_stages:
-    knowledge_update:
-      enabled_only_when: user_selects_knowledge_management_or_requests_durable_learning
-      source_repository_example_tree_is_default_destination: false
-      empty_knowledge_updates_valid_when_omitted: true
+    knowledge_update_after_review: true
+    finalize_after_knowledge_outcome: true
+  knowledge_update:
+    required_for: full_workflow
+    partial_adoption_trigger: scope_includes_knowledge_management
+    separate_per_run_opt_in: false
+    assess_every_full_workflow_run: true
+    retain_eligible_evidence_backed_new_knowledge: true
+    source_repository_example_tree_is_default_destination: false
+    outcome:
+      contract: schemas/artifacts.md#knowledge-outcome
+      applicable_statuses: [updated, no_change, blocked]
+      outside_adoption_scope_status: outside_scope
+      reason_required: true
+      empty_knowledge_updates_proves_assessment: false
+      updated_requires: [completed_writes, passed_applicable_checks]
+      no_change_requires: assessed_no_eligible_durable_learning
+      blocked_requires: [reason, remaining_work]
+      write_or_check_failure_status: blocked
+  finalization:
+    knowledge_outcome_and_reason_required: true
+    completed_with_blocked_knowledge_outcome: false
   approval:
     required_before_edit: true
     options:
@@ -324,6 +414,7 @@ skills:
     - knowledge-base
     - karpathy-guidelines
     - doubt-driven-development
+    - human-readable-communication
   materialization_policy:
     distinguish_historical_provenance_from_application_source: true
     choose_exactly_one_materialization_source_per_skill: true
@@ -401,7 +492,7 @@ skills:
             ref: main
             path: skills/documentation-and-adrs/SKILL.md
             mutable_ref: true
-            compatibility_note: "Use only when knowledge management or durable learning is selected; target knowledge policy takes precedence."
+            compatibility_note: "Use for full-workflow knowledge assessment and partial adoption that includes knowledge management; target knowledge policy takes precedence."
       doubt-driven-development:
         materialization_default: upstream_direct_if_compatible
         local_definition: skills/doubt-driven-development/SKILL.md
@@ -494,24 +585,48 @@ skills:
         materialization_default: local_definition
         local_definition: skills/karpathy-guidelines/SKILL.md
         upstream_candidates: []
+      human-readable-communication:
+        materialization_default: local_definition
+        local_definition: skills/human-readable-communication/SKILL.md
+        source_classification: local_adaptation
+        upstream_candidates: []
+        upstream_influence:
+          repository: https://github.com/danyuchn/asd-ste100-skill
+          path: SKILL.md
+          version: "0.4.0"
+          resolved_commit_sha: 7d4a135a199a5d7447c4886bcd7ffe742a627bc9
+          accessed_date: "2026-10-02"
+          compatibility_decision: "Use the relaxed, self-contained local adaptation; strict English rules, word caps, and rewriting examples are incompatible with the approved multilingual presentation method."
+        supporting_assets:
+          required: [skills/human-readable-communication/LICENSE]
+          included: [skills/human-readable-communication/LICENSE]
+          omitted:
+            - path: references/writing-rules.md
+              reason: "Strict English summary replaced by the self-contained relaxed local method."
+            - path: examples/before-after.md
+              reason: "Some examples change obligation or add content, conflicting with meaning preservation."
+            - path: scripts/ste-lint.py
+              reason: "Hard English word caps and punctuation checks are incompatible; no replacement linter."
+  role_map_policy:
+    knowledge_base_required_for: full_workflow_or_partial_scope_including_knowledge_management
+    selected_roles_without_knowledge_may_omit_knowledge_base_with_reason: outside_adoption_scope
+    per_run_knowledge_opt_in: false
   role_map:
     main_agent:
-      required: [context-engineering, clarification]
+      required: [context-engineering, clarification, knowledge-base]
       conditional:
         doubt-driven-development: "non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions"
-        knowledge-base: "when knowledge management is selected"
+        human-readable-communication: "long or complex explanations, user-facing Plan presentations, and reports"
       artifact_contract: schemas/artifacts.md
     intake:
-      required: [specification, clarification, source-driven-development]
+      required: [specification, clarification, source-driven-development, knowledge-base]
       conditional:
         root-cause: "bugs or failures"
-        knowledge-base: "when knowledge management is selected"
       artifact_contract: schemas/artifacts.md
     planner:
-      required: [task-decomposition, context-engineering, source-driven-development]
+      required: [task-decomposition, context-engineering, source-driven-development, knowledge-base]
       conditional:
         root-cause: "bug with Intake evidence incomplete, contradictory, or insufficient to justify the plan"
-        knowledge-base: "when knowledge management is selected"
       artifact_contract: schemas/artifacts.md
     test_engineer:
       required: [test-driven-development]
@@ -555,7 +670,11 @@ skills:
     require_external_cli_or_model: false
 
 knowledge:
+  included_in_full_workflow: true
   management_is_independently_selectable: true
+  eligible_learning_requires_retention_in_approved_configured_system: true
+  missing_paths_or_write_rules: blocked_never_invent_layout
+  startup_navigation_roles: [main_agent, intake, planner]
   target_path_policy: "Discover and preserve the target's existing knowledge paths and conventions; propose a new location only when needed and approved."
   target_paths:
     root: discovered_or_explicitly_approved

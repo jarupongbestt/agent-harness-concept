@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+- Route messages by intent before Intake: answer ordinary conversation directly,
+  preserve active execution during follow-up questions, and interpret affirmatives
+  in context while retaining complete Plan approval before project edits.
+- Preserve the same run and its artifacts for continuing objectives, with recorded
+  evidence and permitted triggers before stage re-entry; renew approval for
+  material Plan changes.
+- Add a language-aware, meaning-preserving Main Agent communication policy and
+  `human-readable-communication` skill, with recorded upstream provenance and
+  the retained MIT license.
+- Include knowledge management in the full workflow automatically, with configured
+  navigation and skill loading for Main Agent, Intake, and Planner, plus a
+  post-review Curator assessment and retention of eligible durable learning.
+- Require a reasoned Knowledge Outcome for finalization: completed updates,
+  assessed no-change, blocked retention with remaining work, or an explicit
+  outside-scope result for partial adoption without knowledge. Preserve independent
+  knowledge-only adoption and approved target-native paths and protection rules.
+
 ## [0.2.0] - 2026-09-27
 
 - Make the lifecycle plan-first: Intake completes, Planner produces the full

@@ -6,9 +6,11 @@ Load `task-decomposition`, `context-engineering`, and
 `source-driven-development` for this stage. For a bug, load `root-cause` when
 Intake evidence is incomplete, contradictory, or insufficient to justify the
 proposed plan.
-When knowledge management is selected, load `knowledge-base` to navigate only
-the relevant project knowledge pages. Resolve the target's configured or
-existing knowledge entry point from its instructions or adapter map; do not
+Load `knowledge-base` for the full workflow and partial adoption that includes
+knowledge management to navigate only the relevant project knowledge pages.
+Only a partial scope without knowledge may omit it with an outside-scope reason.
+Resolve the target's configured or existing knowledge entry point from its
+instructions or adapter map; do not
 assume `knowledge/main.md`, `knowledge/domain/`, or this repository's example
 tree exists in the target.
 

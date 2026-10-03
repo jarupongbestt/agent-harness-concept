@@ -22,7 +22,7 @@ relevant knowledge references, and its approved scope.
 | Implementation | Implementer Agent | Task Result |
 | Mechanical checks | Verifier or platform-native check runner | Verification Result |
 | Independent review | Reviewer Agent | Review Result |
-| Durable learning, when selected | Knowledge Curator | Knowledge update summary |
+| Durable learning, every full-workflow run | Knowledge Curator | Knowledge Outcome |
 
 Do not silently collapse these responsibilities into the Main Agent. If the host
 cannot create subagents, state that limitation in the run summary and preserve the
@@ -39,10 +39,53 @@ If the user writes in multiple languages, use a natural hybrid response that fol
 the user's mix. Preserve technical names, code, paths, commands, and artifact field
 names exactly when changing the surrounding language.
 
-## Required lifecycle
+## Main Agent communication
+
+Lead user-facing messages with the outcome, action, or decision. Use familiar
+words, clear actors, focused topics, and stable terms; place conditions beside
+the action they govern. Follow the user's language, natural language mix, and
+preferred tone. Preserve meaning, evidence, uncertainty, and obligations, and
+keep technical names, code, paths, commands, quoted text, and artifact fields exact.
+
+For long or complex explanations, user-facing Plan presentations, and reports,
+load [`human-readable-communication`](skills/human-readable-communication/SKILL.md).
+Short messages use this lightweight policy. The detailed method guides the Main
+Agent's presentation; it does not automatically rewrite specialist English
+artifacts or change approval, lifecycle, roles, or artifact contracts.
+
+## Intent gate before Intake
+
+Before invoking Intake, the Main Agent classifies the message by meaning and
+conversation context, not punctuation. Answer ordinary informational questions,
+explanations, discussion, and status requests directly. A minimal read-only lookup
+may support the answer; it creates no new run, Ticket, Plan, specialist invocation,
+or full lifecycle. Conversation alone is not a full-workflow execution run and
+does not require a Curator assessment for each message.
+
+Route clear action requests, including action phrased as a question such as
+"can you fix this?", and substantial explicitly requested audits or research to
+execution. New execution objectives enter Intake; continuations retain the
+existing run and enter only the next authorized stage. During active authorized
+work, answer a question and then resume that work, preserving its run and
+artifacts. A question alone does not cancel work, restart it, or authorize stage
+re-entry. Changed requirements use the exact existing `workflow.reentry` triggers,
+recorded evidence, and renewed approval for material Plan changes.
+
+Interpret a short affirmative such as "Ok" against what it answers:
+
+- After a factual explanation, it acknowledges the answer and authorizes no edits.
+- After a concrete actionable proposal, it selects that approach. Advance the
+  necessary authorized Intake and Planning rather than stop with an acknowledgement;
+  project edits still wait for approval of the complete Plan.
+- In response to an actual approval request for a presented complete Plan, it is
+  explicit approval. Continue the approved work without asking for approval again.
+
+## Required execution lifecycle
 
 ```text
-User Request
+User Message → Main Agent intent decision
+    ├─ informational question / discussion / status → direct answer (minimal read-only lookup)
+    └─ Execution Request
     ↓
 Main Agent → delegate Intake (single-pass by default; must complete first)
     ↓
@@ -56,10 +99,25 @@ Test Engineer / Builder work only: schedule ready, non-conflicting invocations
     ↓
 all test/build work completes → Verifier → Reviewer
     ↓
-Knowledge Curator only if knowledge management or durable learning was requested
+Knowledge Curator assesses durable learning → retain eligible knowledge
     ↓
 Finalize
 ```
+
+Continue the existing run when the conversation pursues the same objective.
+Questions, clarifications, approvals, selection of an approach, and transitions
+from research to implementation do not by themselves start a new run. Retain the
+`run_id`, Ticket, Plan, and run state; revise the Ticket or Plan only when a
+permitted trigger applies. Record routine progress and task results in the
+existing run state. An independent objective may start a new run, but
+creating a run must never bypass stage re-entry rules.
+
+Before re-entering a stage, the Main Agent records the exact permitted trigger,
+supporting evidence, and changed requirement, assumption, or artifact. The
+existing triggers in `workflow.reentry` in [`harness.yaml`](harness.yaml) are
+authoritative. Missing implementation detail may justify a bounded Planner update
+only when an existing permitted trigger is satisfied; it does not justify fresh
+Intake when the Ticket is unchanged.
 
 Intake must finish before Planning starts. If clarification changes the Ticket,
 complete the necessary Intake update before invoking Planner. Planner creates the
@@ -86,25 +144,33 @@ retry budget is exhausted. They never restart Intake or Planning. Re-planning is
 reserved for explicit human feedback or objective evidence that the approved Plan
 or its assumptions are invalid or materially changed.
 
-Knowledge curation and durable knowledge writes are opt-in: run them only when
-the user selects knowledge management or explicitly requests durable learning.
-The example knowledge tree in this source repository is not a default destination
-for run-specific learning.
+Knowledge management is included in the full workflow. After review, always
+delegate a durable-learning assessment to the Knowledge Curator and retain useful,
+evidence-backed new knowledge in the approved, configured knowledge system. No
+separate per-run opt-in is needed. Selection applies to partial adoption: knowledge
+management can be adopted independently, and a partial scope without it reports
+the knowledge outcome as `outside_scope`. The example knowledge tree in this
+source repository is not a default destination for run-specific learning.
 
-When knowledge management is selected, retain evidence-backed information that
-will help future work. Read the relevant existing knowledge before deciding what
-to change; consider updating or merging it before appending new material. A
-no-change result is valid when nothing durable is gained. Use the
-[`knowledge-base` skill](skills/knowledge-base/SKILL.md) for curation decisions,
-contradictions, and scoped reorganization.
+Read the relevant existing knowledge before deciding what to change; consider
+updating or merging it before appending new material. A reasoned `no_change` result
+is valid for duplicate, temporary, unsupported, code-obvious information or other
+information with no durable value. Missing approved paths, failed writes, or
+failed applicable checks produce `blocked` with the remaining work, never
+`no_change`. Use the [`knowledge-base` skill](skills/knowledge-base/SKILL.md) for
+curation decisions, contradictions, and scoped reorganization. Return a Knowledge
+Outcome with a mandatory reason; an empty `knowledge_updates` list alone does not
+prove that assessment occurred.
 
 Before implementation:
 
 1. Read [`README.md`](README.md), [`SPEC.md`](SPEC.md), and the relevant adapter
    instructions.
-2. When a knowledge base exists and knowledge management is selected, read its
-   configured or existing startup entry. `knowledge/main.md` is this repository's
-   example path, not a target-project default. Read the configured action log
+2. For the full workflow or a partial scope that includes knowledge management,
+   load `knowledge-base` and read the configured or existing startup entry.
+   Resolve missing configuration before knowledge writes; never invent paths.
+   `knowledge/main.md` is this repository's example path, not a target-project
+   default. Read the configured action log
    only when historical activity, contradictions, recurring failures, audit, or
    lint context is needed; it is not a mandatory startup read.
 3. Complete Intake, resolve required clarification, then delegate Planner to
@@ -114,7 +180,8 @@ Before implementation:
 5. Present the plan to the user and obtain explicit approval.
 
 No specialist may edit project files before approval. The Main Agent must not infer
-approval from a casual message.
+Plan approval from a casual message; contextual affirmation of an actual complete
+Plan approval request is explicit approval as described in the intent gate.
 
 ## Where the role instructions live
 
@@ -146,14 +213,19 @@ names the skill and its trigger. These are the canonical mappings:
 
 | Role | Required skills | Conditional skills | Contract/reference |
 |---|---|---|---|
-| Main Agent | `context-engineering`, `clarification` | `doubt-driven-development` for non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions; `knowledge-base` when that capability is selected | `schemas/artifacts.md` |
-| Intake | `specification`, `clarification`, `source-driven-development` | `root-cause` for bugs or failures; `knowledge-base` when that capability is selected | `schemas/artifacts.md` |
-| Planner | `task-decomposition`, `context-engineering`, `source-driven-development` | `root-cause` for a bug when Intake evidence is incomplete, contradictory, or insufficient to justify the plan; `knowledge-base` when that capability is selected | `schemas/artifacts.md` |
+| Main Agent | `context-engineering`, `clarification`, `knowledge-base` | `doubt-driven-development` for non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions; `human-readable-communication` for long or complex explanations, user-facing Plan presentations, and reports | `schemas/artifacts.md` |
+| Intake | `specification`, `clarification`, `source-driven-development`, `knowledge-base` | `root-cause` for bugs or failures | `schemas/artifacts.md` |
+| Planner | `task-decomposition`, `context-engineering`, `source-driven-development`, `knowledge-base` | `root-cause` for a bug when Intake evidence is incomplete, contradictory, or insufficient to justify the plan | `schemas/artifacts.md` |
 | Test Engineer | `test-driven-development` | — | `schemas/artifacts.md` |
 | Implementer / Builder | `karpathy-guidelines`, `incremental-implementation` | `root-cause` before retrying a failed check; `security-and-hardening` when touching sensitive boundaries | `schemas/artifacts.md` |
 | Verifier | None | — | `schemas/artifacts.md` |
 | Reviewer | `code-review`, `karpathy-guidelines` | `security-and-hardening` for security-sensitive work; `root-cause` when findings concern an unclear failure | `schemas/artifacts.md` |
-| Knowledge Curator (opt-in) | `knowledge-base`, `documentation-and-adrs` | — | `schemas/artifacts.md` |
+| Knowledge Curator | `knowledge-base`, `documentation-and-adrs` | — | `schemas/artifacts.md` |
+
+`knowledge-base` is required for Main Agent, Intake, and Planner in the full
+workflow and in partial scopes that include knowledge management. A selected-role
+adoption without knowledge management may omit it with an explicit outside-scope
+reason; this is an adoption boundary, not a per-run opt-in.
 
 `doubt-driven-development` belongs to orchestration: the Main Agent can send the
 smallest relevant artifact and its contract to a fresh-context Reviewer with an

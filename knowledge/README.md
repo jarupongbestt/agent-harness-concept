@@ -65,12 +65,25 @@ validated by the knowledge linter; it is not a transcript or startup memory dump
 
 ## Finalization check
 
-When knowledge management is selected, before a non-trivial run ends, ask:
+Every full-workflow run delegates a Knowledge Curator assessment after review;
+no separate per-run opt-in or complexity threshold applies. Partial adoption can
+include knowledge management independently, without requiring agents, models,
+or persisted run state. Assess:
 
 ```text
 Did this run teach a durable fact, constraint, decision, procedure, or recurring
 failure pattern that would help a future task?
 ```
 
-If yes, the Knowledge Curator updates the appropriate topic page, index, and log,
-then runs the knowledge linter.
+If yes, read existing knowledge and retain eligible evidence-backed new learning
+in the approved configured system, updating or merging before creating new topics.
+Maintain applicable navigation and logs, then run configured checks. Do not treat
+this example tree as a default destination for run-specific learning.
+
+Report a Knowledge Outcome with a mandatory reason: `updated` after writes and
+applicable checks complete; `no_change` after assessment finds only duplicate,
+temporary, unsupported, code-obvious, or other non-durable information; `blocked`
+with remaining work when paths or write rules are missing, writes fail, or checks
+fail. Never invent paths or use `no_change` for blocked retention. A partial
+scope without knowledge reports `outside_scope` explicitly. Empty
+`knowledge_updates` alone does not prove assessment.

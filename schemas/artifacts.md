@@ -477,6 +477,44 @@ findings:
     recommendation: "Add a test for duplicate callback submission"
 ```
 
+## Knowledge Outcome
+
+The full workflow requires a post-review Knowledge Curator assessment on every
+run, without separate per-run opt-in. This contract also applies to independent
+partial adoption of knowledge management, without requiring agents, models, or
+run-state storage. Partial scopes without knowledge report `outside_scope`.
+
+```yaml
+applicable: true
+status: no_change          # updated | no_change | blocked | outside_scope
+reason: "Assessment found no eligible new durable learning beyond existing knowledge"
+evidence: []               # references to assessed findings and relevant existing knowledge
+files_changed: []          # completed writes only, including partial writes if blocked
+checks:
+  - status: not_applicable
+    reason: "No knowledge writes were needed; no configured read-only checks apply"
+remaining_work: []         # required, nonempty when blocked
+```
+
+`reason` is mandatory and nonempty for every status. `applicable` is true for the
+full workflow and partial scopes including knowledge management; it is false only
+for an adoption scope without knowledge, which must use `outside_scope` and state
+that adoption boundary in `reason`. An applicable assessment uses only `updated`,
+`no_change`, or `blocked`; full workflow cannot claim `outside_scope`.
+
+`updated` requires completed eligible, evidence-backed writes to the approved
+configured system and passed applicable checks. Read relevant existing knowledge,
+update or merge before creating redundant material, and preserve native mapping,
+provenance, category protection, and approval safeguards. Record check results;
+if no checks apply, explain that explicitly. `no_change` requires an actual
+assessment with a reason such as duplicate, temporary, unsupported, code-obvious,
+or otherwise no durable value. Empty writes alone do not establish assessment.
+Missing approved paths, ambiguous write rules, failed writes, failed applicable
+checks, or inability to assess required evidence are `blocked`, with the blocker
+in `reason` and concrete `remaining_work`. Never invent destinations or report
+blocked retention as `no_change`. Record completed partial writes separately;
+they do not permit an `updated` outcome while required retention or checks remain.
+
 ## Run Summary
 
 ```yaml
@@ -552,7 +590,17 @@ native_post_write_verification:
       confidence: high
       result: verified
   limitations: []
-knowledge_updates: []       # valid when knowledge curation was omitted or had no durable updates
+knowledge_outcome:           # required; follows the Knowledge Outcome contract
+  applicable: true
+  status: no_change
+  reason: "Assessment found no eligible new durable learning beyond existing knowledge"
+  evidence: []
+  files_changed: []
+  checks:
+    - status: not_applicable
+      reason: "No knowledge writes were needed; no configured read-only checks apply"
+  remaining_work: []
+knowledge_updates: []        # completed knowledge writes; [] alone does not prove assessment
 unresolved_risks: []
 ```
 
@@ -569,8 +617,12 @@ status also forbids `approval.decision: proceed` and target writes. All existing
 Run Summary fields retain their prior meanings, including `reentry`, `retries`,
 `parallel_groups`, `serialized_conflicts`, and `replan_reasons`.
 
-Knowledge curation and durable knowledge writes are opt-in: include paths in
-`knowledge_updates` only when the user selected knowledge management or explicitly
-requested durable learning and updates were recorded. Otherwise `knowledge_updates: []`
-is valid, including when the Knowledge Curator was omitted. Do not write run-specific
-learning to this source repository's example knowledge tree by default.
+`knowledge_outcome` is required and uses the Knowledge Outcome contract above.
+Include completed writes in `knowledge_updates`, keeping it consistent with
+`knowledge_outcome.files_changed`; partial completed writes may be listed for a
+`blocked` outcome, with remaining work reported explicitly. An empty list is
+valid with a reasoned `no_change`, a `blocked` outcome with no completed writes,
+or an explicit `outside_scope` for partial adoption without knowledge. It never
+proves assessment by itself. A blocked required knowledge outcome prevents the
+Run Summary from claiming `status: completed`. Do not write run-specific learning
+to this source repository's example knowledge tree by default.

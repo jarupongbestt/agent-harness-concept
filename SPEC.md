@@ -52,6 +52,18 @@ another agent's native instructions and tools.
     use English. User-facing responses follow the language of the request and may
     be hybrid when the user is multilingual.
 
+The Main Agent leads user-facing messages with the outcome, action, or decision,
+using familiar words, clear actors, focused topics, and stable terms. Conditions
+stay beside the action they govern. Follow the user's language, natural language
+mix, and preferred tone; preserve meaning, evidence, uncertainty, obligations,
+and exact technical names, code, paths, commands, quoted text, and artifact fields.
+Short messages use the bootstrap's lightweight communication policy. For long or
+complex explanations, user-facing Plan presentations, and reports, the Main Agent
+loads [`human-readable-communication`](skills/human-readable-communication/SKILL.md).
+This is a presentation method, not an automatic rewrite of specialist English
+artifacts or a guarantee that the underlying content is true. It does not alter
+roles, artifact fields, approval gates, or the lifecycle.
+
 The workflow is intentionally multi-agent. A conforming adapter must provide a way
 to invoke specialist subagents, or explicitly report that the host lacks that
 capability. A single-agent fallback may preserve the role boundaries and artifact
@@ -96,15 +108,56 @@ changed, and renew approval after a material Plan change.
 
 ### 3.1 User Request
 
-The user provides a natural-language request. The Main Agent creates a new run and
-assigns it a `run_id`.
+Before Intake, the Main Agent classifies the message by meaning and conversation
+context, not punctuation. Answer ordinary informational questions, explanations,
+discussion, and status requests directly. Allow only a minimal read-only lookup
+needed for the answer; do not create a new run, Ticket, Plan, specialist invocation,
+or full lifecycle for that conversation. Ordinary conversation is not a
+full-workflow execution run and does not require per-message knowledge curation.
+Clear action requests, including "can you fix this?", and substantial explicitly
+requested audits or research route to execution.
+
+During active authorized work, answer questions and then resume the same run and
+preserve its artifacts. A question alone does not cancel work, restart it, or
+trigger stage re-entry. Changed requirements follow the exact existing
+`workflow.reentry` triggers with recorded evidence and renewed approval for a
+material Plan change.
+
+Interpret short affirmatives such as "Ok" in context: after a factual explanation,
+they acknowledge it without authorizing edits; after a concrete actionable
+proposal, they select that approach and advance necessary authorized Intake and
+Planning, with edits still waiting for complete Plan approval; after an actual
+approval request for a presented complete Plan, they explicitly approve the Plan
+and work proceeds without a duplicate approval request. Approach selection alone
+is not approval of a Plan that has not been presented in full.
+
+For an execution request pursuing a new independent objective,
+the Main Agent may create a new run and assign it a `run_id`. Continue the existing
+run when the conversation pursues the same objective. Questions, clarifications,
+approvals, selection of an approach, and transitions from research to
+implementation do not by themselves start a new run. Retain the `run_id`, Ticket,
+Plan, and run state; revise the Ticket or Plan only when a permitted trigger
+applies. Record routine progress and task results in the existing run state.
+Creating a run must never bypass stage re-entry rules.
+
+Before re-entering a stage, the Main Agent records the exact permitted trigger,
+supporting evidence, and changed requirement, assumption, or artifact. The
+existing triggers in `workflow.reentry` in [`harness.yaml`](harness.yaml) are
+authoritative. Missing implementation detail may justify a bounded Planner update
+only when an existing permitted trigger is satisfied; it does not justify fresh
+Intake when the Ticket is unchanged.
 
 ### 3.2 Intake
 
-The Main Agent delegates Intake to the Intake Agent. When knowledge management
-is selected, Intake follows the target project's configured or existing knowledge
-navigation entry before creating a Ticket. `knowledge/main.md` is this
-repository's example path, not a target-project default. Intake consults the
+Intake starts only for an execution request routed by the Main Agent or a permitted,
+evidence-backed Intake re-entry. Direct conversation does not invoke this stage.
+
+The Main Agent delegates Intake to the Intake Agent. In the full workflow, Main
+Agent, Intake, and Planner load `knowledge-base` and follow the target project's
+configured or existing knowledge navigation entry before defining scope and plans.
+The same rule applies to partial adoption that includes knowledge management;
+partial scopes without it may explicitly omit this dependency. `knowledge/main.md`
+is this repository's example path, not a target-project default. Intake consults the
 target's configured action log only when historical activity, contradictions,
 recurring failures, audit, or lint context is relevant. It identifies the change
 type, scope, acceptance criteria, risk, confidence, and whether clarification is
@@ -277,10 +330,16 @@ Review depth is risk-based:
 
 ### 3.10 Knowledge Update
 
-Knowledge curation is opt-in. Run this stage only when the user selected knowledge
-management or explicitly requested durable learning. Never write run-specific
-learning to this repository's example knowledge tree by default. When selected,
-the Knowledge Curator records durable information learned during the run:
+Knowledge management is included in the full workflow, without a separate per-run
+opt-in. After review completes, the Main Agent always delegates an assessment to
+the Knowledge Curator, serially with other specialist work. The Curator reads
+relevant existing knowledge and retains eligible, evidence-backed new learning
+in the approved, configured system, updating or merging before creating redundant
+material. Partial adoption may select knowledge management independently without
+agents, model assignments, or persisted run state. A partial adoption without
+knowledge management reports `outside_scope` with a reason. Never write
+run-specific learning to this repository's example knowledge tree by default.
+Eligible durable information includes:
 
 - architectural decisions
 - project conventions
@@ -290,18 +349,29 @@ the Knowledge Curator records durable information learned during the run:
 - testing relationships
 - operational procedures
 
-It does not copy the conversation transcript into the knowledge base. If the
-stage is omitted, `knowledge_updates: []` is a valid Run Summary.
+Do not copy conversation transcripts or routine diaries into the knowledge base.
+The Curator returns a Knowledge Outcome with a mandatory reason and evidence:
+`updated` only after eligible writes and applicable checks complete; `no_change`
+after assessment finds only duplicate, temporary, unsupported, code-obvious, or
+otherwise non-durable information; or `blocked` with remaining work for missing
+approved paths, ambiguous write rules, failed writes, or failed applicable checks.
+Do not invent a layout or treat blocked retention as no learning. Preserve native
+mapping, category protection, provenance, and approval safeguards. An empty
+`knowledge_updates` list alone cannot establish assessment or success.
 
 ### 3.11 Finalize
 
-The Main Agent confirms the final scope, test results, review findings, any
-selected knowledge updates, unresolved risks, and changed files. It returns
-control to the user.
+The Main Agent confirms the final scope, test results, review findings, Knowledge
+Outcome and reason, completed knowledge updates, unresolved risks, and changed
+files. A blocked knowledge outcome leaves required work and prevents a completed
+run claim; report the blocker and remaining work. Partial adoption without
+knowledge reports `outside_scope` explicitly. It returns control to the user.
 
 ## 4. Complexity routing
 
-All tasks are planned. Complexity only controls model strength and review depth.
+All execution tasks routed into the lifecycle are planned. Direct conversational
+answers do not require a Plan. Complexity only controls model strength and review
+depth.
 
 | Tier | Typical task | Routing |
 |---|---|---|
@@ -337,7 +407,7 @@ Suggested default permissions:
 | Implementer | scoped | yes | no | no | no |
 | Verifier | scoped | no | no | no | no |
 | Reviewer | scoped | no | no | no | no |
-| Knowledge Curator (opt-in) | relevant | no | no | yes | no |
+| Knowledge Curator | relevant | no | no | yes | no |
 
 The exact enforcement mechanism belongs to the adapter.
 
@@ -349,6 +419,11 @@ A run is complete when:
 - verification results are available
 - review is complete or intentionally skipped with a reason
 - scope was audited
-- durable knowledge was considered only when selected or explicitly requested
+- the applicable knowledge assessment completed with `updated` or a reasoned
+  `no_change`; a partial scope without knowledge reports `outside_scope`
 - no unauthorized git action occurred
 - the Main Agent returned a final summary
+
+If required knowledge assessment or retention is blocked, finalize with
+`status: blocked`, a reason, and the remaining work. This is a blocked result,
+not a completed run.
