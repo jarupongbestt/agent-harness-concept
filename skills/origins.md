@@ -1,8 +1,8 @@
 # Skill Origins and Provenance
 
 This registry explains where the skill concepts came from. It is deliberately
-explicit because the harness is intended to be copied or adapted by Claude, Codex,
-OpenCode, Hermes, and other agents.
+explicit because the harness is intended to be adapted by Claude Code, Codex,
+Pi, OpenCode, Hermes, and other agents.
 
 The skills are not claimed to be copied verbatim from any one runtime. `Adapted`
 means the concept is based on a named source and rewritten for the portable
@@ -67,12 +67,26 @@ it does not establish authorship, origin, equivalence, or compatibility.
 | `code-quality` | Local adaptation | [Ponytail](https://github.com/DietrichGebert/ponytail/blob/96608e078b2d5ea607c5c3b8b5a54d1c1fba6846/skills/ponytail/SKILL.md); [Minimize Reader Load](https://github.com/cursor/plugins/blob/bb68f2365eceafa0cb2d253112f675acf5f144cc/pstack/skills/principle-minimize-reader-load/SKILL.md); historical [Andrej Karpathy observations](https://x.com/karpathy/status/2015883857489522876) and [portable skill reference](https://github.com/multica-ai/andrej-karpathy-skills/tree/main/skills/karpathy-guidelines) | Retains the four Karpathy principles and adds suitable reuse, traceable state and flow, useful abstraction boundaries, domain names, rationale comments, and readable tests within approved scope |
 | `doubt-driven-development` | Adapted | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development) | Main-Agent orchestration that sends a minimal packet for fresh-context adversarial review, reconciles evidence, and bounds follow-up; no mandatory external CLI/model |
 | `human-readable-communication` | Local adaptation | [danyuchn/asd-ste100-skill v0.4.0](https://github.com/danyuchn/asd-ste100-skill/blob/7d4a135a199a5d7447c4886bcd7ffe742a627bc9/SKILL.md) | Familiar words, clear actors, focused topics, stable terms, and conditions beside actions; rewritten as a relaxed, language-aware Main Agent presentation method that preserves meaning and harness contracts |
+| `pr` | Synthesized | [agent-harness](https://github.com/jarupongbestt/agent-harness); Git/PR publication and evidence-based review practice | Original local synthesis for optional `open` and `ship`, preserving selected scope, current evidence, independent roles, and bounded recovery |
 | `frontend-ui` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `api-design` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `database-migrations` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `data-pipelines` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `cloud-infrastructure` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `observability` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
+
+## PR synthesis
+
+`pr` uses one original local definition, with required
+[`references/open.md`](pr/references/open.md) and
+[`references/ship.md`](pr/references/ship.md). It is not copied from Claude Ship
+or claimed native to Claude Code, Codex, Pi, Hermes, or OpenCode. The
+[first-party invocation references](../adapters/README.md#optional-pr-mapping),
+accessed 2026-11-25, establish research anchors for native projection, not authorship,
+source-code provenance, target discovery, or runtime validation. Each downstream
+application still resolves the chosen local source's full commit SHA and access
+date, reviews compatibility, inventories recursively linked assets, and rewrites
+links into approved native destinations without copying the source tree.
 
 ## Code quality adaptation
 

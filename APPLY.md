@@ -57,8 +57,8 @@ platform version and operating mode before placing either path in a map.
 
 Native convention discovery is a mandatory, read-only gate before concept
 mapping, target file-map proposal, or any write. It applies when the target uses
-Codex, Claude, OpenCode, Hermes, or any other platform. The applying agent must
-not infer a convention from this repository's examples, from a familiar
+Codex, Claude Code, Pi, OpenCode, Hermes, or any other platform. The applying agent
+must not infer a convention from this repository's examples, from a familiar
 filename, or from a path that happens to exist.
 
 Before creating a concept map, the applying agent must identify and record:
@@ -165,6 +165,18 @@ learning. There is no separate per-run opt-in. Knowledge management can also be
 selected by itself and must not imply lifecycle, agent, model, or run-state
 installation. A selected-role or capability scope without knowledge may omit its
 skills and integration only as outside adoption scope, with an explicit reason.
+
+`pr` is an independently selected optional capability, not an automatic part of
+full workflow or Main Agent adoption. Declare selected actions and capabilities:
+`open` may stand alone; `ship` needs isolated independent review, and any repair
+needs the existing approved lifecycle/roles, scope, and cumulative retry history.
+Do not infer or install full workflow from `ship` selection. Resolve its local
+source's full commit SHA, access date, compatibility, required `references/open.md`
+and `references/ship.md`, and recursive links before approval. Project only the
+approved native skill integration, rewriting links. See the
+[canonical PR policy](SPEC.md#optional-pr-capability) and
+[adapter evidence and acceptance requirements](adapters/README.md#optional-pr-mapping)
+for invocation, tooling, permissions, delegation, and checkpoint/resume discovery.
 
 Inspect the target project and platform before asking scope or configuration
 questions. Ask only questions still unresolved by that inspection and relevant
@@ -319,6 +331,9 @@ When the user asks to apply this harness:
    complete evidence. If native verification cannot be completed or evidence
    fails, mark the affected record `unknown` or `blocked`, stop before additional
    target writes, and report the run as blocked without claiming success.
+   For selected `pr` actions, include the adapter's PR acceptance evidence; official
+   documentation and candidate entrypoint spellings do not prove native loading,
+   action delivery, permission enforcement, delegation, or safe resumption.
 10. Audit the resulting diff against the approved map and confirm that the
    illustrative source tree was not copied. Report the exact files created,
    changed, or left untouched; each verified native destination and mechanism;
@@ -349,13 +364,13 @@ unchanged.
 Use the platform's current documentation and capabilities to confirm the actual
 paths. These are examples of where an adapter might live:
 
-| Portable responsibility | Claude example | Codex example | OpenCode example | Hermes example |
-|---|---|---|---|---|
-| Project bootstrap | `CLAUDE.md` | `AGENTS.md` | OpenCode project config | Hermes project/config file |
-| Specialist subagents | `.claude/agents/` | `.codex/agents/` or the host's current agent mechanism | `.opencode/agents/` or native agent mechanism | Native Hermes agent/session mechanism |
-| Reusable skills | `.claude/skills/` | `.agents/skills/` or the host's current skill mechanism | `.opencode/skills/` or native skill mechanism | Native Hermes skill mechanism |
-| Durable knowledge | `knowledge/` | `knowledge/` | `knowledge/` or an approved compatible path | `knowledge/` or an approved compatible path |
-| Temporary run state | `.harness/runs/` | `.harness/runs/` | `.harness/runs/` or native session storage | `.harness/runs/` or native session storage |
+| Portable responsibility | Claude Code example | Codex example | Pi example | OpenCode example | Hermes example |
+|---|---|---|---|---|---|
+| Project bootstrap | `CLAUDE.md` | `AGENTS.md` | Discovered instruction mechanism | OpenCode project config | Hermes project/config file |
+| Specialist subagents | `.claude/agents/` | `.codex/agents/` or the host's current agent mechanism | Approved extension or isolated execution; not bundled | `.opencode/agents/` or native agent mechanism | Native Hermes agent/session mechanism |
+| Reusable skills | `.claude/skills/` | `.agents/skills/` or the host's current skill mechanism | `.agents/skills/` or configured skill location | `.opencode/skills/` or native skill mechanism | Native Hermes skill mechanism |
+| Durable knowledge | `knowledge/` | `knowledge/` | Discovered/approved compatible home | `knowledge/` or an approved compatible path | `knowledge/` or an approved compatible path |
+| Temporary run state | `.harness/runs/` | `.harness/runs/` | Discovered/approved checkpoint mechanism | `.harness/runs/` or native session storage | `.harness/runs/` or native session storage |
 
 The `.claude/`, `.codex/`, and `.agents/` paths above are not interchangeable
 standards and are not guaranteed to be supported by every version of a platform.
@@ -370,6 +385,8 @@ Claude Code's [instruction](https://code.claude.com/docs/en/memory),
 [custom subagent](https://code.claude.com/docs/en/agents) guidance. These links
 are reference evidence only; discovery must record the source, access date,
 platform version, operating mode, and native verification for the actual run.
+Pi and Hermes skill-invocation sources and their claim boundaries are recorded in
+the [adapter PR mapping](adapters/README.md#optional-pr-mapping), accessed 2026-11-25.
 
 ## What the applying agent should create
 

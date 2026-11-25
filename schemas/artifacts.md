@@ -587,13 +587,162 @@ criteria conflict → `acceptance_criteria_change`. `replan_trigger` is otherwis
 ## Review Result
 
 ```yaml
-status: approved        # approved | changes-requested | blocked
+status: changes-requested # approved | changes-requested | blocked
+reviewed_scope_ref: "approved Plan/slice or full PR diff at recorded head/base"
+evidence: []            # inspected artifacts, checks, and exact revision references
 findings:
   - severity: medium
-    title: "Missing concurrent callback test"
-    file: tests/auth/callback.test.ts
-    recommendation: "Add a test for duplicate callback submission"
+    disposition: required  # required | optional
+    title: "Concurrent callbacks can both consume the same state"
+    file: src/auth/state.ts
+    line: 42            # null when no meaningful line location applies
+    evidence: ["state-read/write implementation and concurrent-callback reproduction"]
+    scenario: "Two callbacks read unused state before either marks it consumed"
+    impact: "Both callbacks can pass a single-use authorization check"
+    recommendation: "Make consumption atomic and cover concurrent submission"
+unassessed_coverage: [] # important areas not assessed, with reasons and impact on decision
+limitations: []
 ```
+
+Findings require evidence, a reachable scenario, concrete impact, and a location
+(including a line where applicable). `disposition` distinguishes required fixes
+from optional suggestions. `changes-requested` needs at least one required
+finding with supported impact; style or preference alone cannot block approval.
+Report important unassessed coverage and limits even when no findings exist.
+If material missing information prevents a decision, use `blocked`; do not
+invent an approval or a defect. Existing statuses retain their meanings.
+
+## PR Operation Result
+
+This optional contract is both the operation's resumable checkpoint and its
+result. It is independent of the development lifecycle and imposes no storage
+path or new role. Adapters may use existing approved run state or an equivalent
+record while preserving the identity, history, and fields below.
+
+```yaml
+operation_id: pr-operation-123
+action: open                    # open | ship
+status: pending                 # pending | completed | blocked | stopped
+started_at: "YYYY-MM-DDTHH:MM:SSZ"
+updated_at: "YYYY-MM-DDTHH:MM:SSZ"
+identity:
+  host: "resolved host"
+  base_repository: "resolved owner/repository"
+  base_branch: "resolved target branch"
+  head_repository: "resolved owner/repository"
+  head_branch: "resolved source branch"
+  fork_identity: "resolved fork relationship, or explicit same-repository"
+pr:
+  url: null
+  state: unresolved             # unresolved | absent | open | closed | merged
+observed_revision:
+  head_sha: null
+  base_sha: null
+  observed_at: null
+publication_scope:
+  selected_topics: []
+  excluded_topics: []
+  full_diff_ref: null           # entire resultant diff against exact target, not just a run's files
+  selected_local_work_ref: null # staged/unstaged/untracked selection and preserved unrelated state
+  authorization_ref: null       # explicit user action and chosen scope/mutations
+  allowed_mutations: []
+source_run_refs: []             # optional provenance; multiple/finalized/no summary are valid
+approved_slice_mappings: []     # repairs: Plan/slice/scope/authority refs; never inferred from file presence
+mutations:
+  completed: []                 # exact action, identity, resulting SHA/URL, time, evidence
+  partial: []                   # observed side effects and reconciliation still required
+review:
+  result_ref: null              # existing Review Result for full PR diff
+  head_sha: null
+  base_sha: null
+  evidence: []
+checks:
+  gate_status: pending          # pending | passed | failed | blocked | unknown | not_applicable
+  coverage: []                  # actual assessed behavior, gaps, and remote limitations
+  evidence:
+    - name: "check name"
+      location: remote         # local | remote
+      required: true
+      outcome: pending         # passed | failed | pending | skipped | neutral | absent | blocked
+      raw_conclusion: null     # exact host conclusion; separate from gate acceptance and execution evidence
+      head_sha: "observed head SHA"
+      base_sha: "observed base SHA"
+      tested_sha: null         # actual executed SHA; do not assume it equals head
+      tested_revision_kind: test_merge # head | test_merge | local_snapshot | unknown
+      snapshot_ref: null       # exact local state when uncommitted work was tested
+      run_url: null
+      check_url: null
+      observed_at: "YYYY-MM-DDTHH:MM:SSZ"
+      freshness: unknown       # current | stale | unknown
+      evidence_ref: null
+budgets:
+  recorded_at_start: "YYYY-MM-DDTHH:MM:SSZ"
+  development: []              # per approved slice: max_retries, attempts_used, retries_used, history_refs
+  observation_wait: {limit: 10, used: 0, deadline: "YYYY-MM-DDTHH:MM:SSZ"}
+  infrastructure_rerun: {limit: 1, used: 0}
+wait_state:
+  reason: null
+  next_observation_at: null
+repair_result_refs: []         # existing Task/Verification/Review/Run Summary/Knowledge Outcome attribution
+blockers: []
+limitations: []
+next_permitted_action: "resolve identity and chosen publication scope"
+resume_checkpoint: "last reconciled state, pending work, and evidence to refresh"
+```
+
+All top-level fields are required except `source_run_refs`, which may be omitted.
+Lists may be empty and unresolved values may be `null` only when explicitly
+reported as pending, blocked, stopped, or inapplicable; they cannot hide required
+evidence for completion. Counts and deadlines above are illustrative, not
+defaults: record finite operation budgets at start. `completed` for `open`
+requires the exact open PR URL and selected publication, then stops. `completed`
+for `ship` additionally requires approved current independent full-diff review
+and required gates satisfied under actual host/repository rules, with raw check
+conclusions, actual coverage, and remote limitations reported separately.
+Completion satisfies this action's reporting contract;
+it never implies automatic merge readiness or an unobserved remote pass.
+`pending` records bounded waiting or an approval dependency; `blocked` records
+unavailable required evidence, exhausted budgets, or another unresolved barrier;
+`stopped` records an explicit stop without claiming success. No status implies
+merge or post-merge execution.
+
+`publication_scope` records the entire resultant diff, topic selection, local
+work selection, preserved unrelated state, and authority required by the
+[PR policy](../SPEC.md#optional-pr-capability). Closed/merged PRs, no diff,
+ambiguity, and partial effects need explicit outcomes. Reconcile actual
+local/remote state and completed/partial mutations before retry; resume with
+the same operation identity/checkpoint without duplicating commits or PRs.
+
+Every check records the head/base it concerns, actual tested SHA (including a
+test-merge SHA where applicable), URLs for remote runs/checks, outcome, time,
+freshness, and supporting evidence. A local uncommitted check identifies its
+exact snapshot instead of inventing a commit SHA. Unknown or unavailable values
+must be explained in `limitations`/`blockers`. Head/base updates stale affected
+review/check evidence; refresh it before proceeding. Absent/skipped/stale evidence
+cannot prove that behavior executed and passed. Record raw conclusions, current
+host/repository gate acceptance, and execution coverage separately: an accepted
+skipped/neutral conclusion or conditional-job success may satisfy a gate without
+executing the relevant behavior. Missing required checks still block completion.
+`not_applicable` requires evidence that no gate applies; unknown requirements
+remain `unknown` or `blocked`, never passed.
+
+Before repair, `approved_slice_mappings` identifies the approved Plan, slice,
+scope, and authorization evidence even when there are no source Run Summaries.
+`budgets.development` carries cumulative slice attempts/retries and history
+across invocations, sessions, and all relevant runs; neither republishing nor a
+new session resets it. Observation/wait and infrastructure reruns have separate
+finite counters, not development retries. Classify unknown, transient, permission,
+or platform failures before treating them as code defects. A budget change
+requires recorded authority and retains usage/history. Re-entry records use the
+exact existing `workflow.reentry` trigger and evidence; a material Plan change
+waits for renewed approval, then resumes this operation.
+
+Use existing development artifact contracts for conditional Test Engineer
+handoff, Builder, Verifier, independent Reviewer, Curator, and current repair
+reporting. Reference those results (including Knowledge Outcome and any current
+Run Summary) in `repair_result_refs`; do not redefine them or rewrite completed
+run histories. Publication of a repair requires verified authorized work on the
+same PR and renewed observation of its resulting revision.
 
 ## Knowledge Outcome
 

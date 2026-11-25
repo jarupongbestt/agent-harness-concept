@@ -155,6 +155,64 @@ record its upstream influence. Unsupported native loading requires an approved
 translation into a supported native mechanism or an explicit omission; never
 silently substitute a source or method.
 
+## Optional PR mapping
+
+Select `pr` independently; neither full-workflow nor Main Agent selection implies
+it. The [canonical policy](../SPEC.md#optional-pr-capability) and
+[skill](../skills/pr/SKILL.md) own the procedure. Map one skill with `open`/`ship`
+action text, not a new role, lifecycle stage, built-in command, or mandatory CLI.
+Include/translate its required `references/open.md` and `references/ship.md`,
+inspect recursive links, and rewrite or reference canonical contracts under the
+existing source-resolution rules.
+
+These first-party research anchors were accessed **2026-11-25**. The candidate
+entrypoints project native skill invocation after registration; they are not
+installed or tested commands. Verify the actual version, operating mode, runtime,
+destinations, loading, discovery, names/collisions, and action argument delivery.
+Documentation evidence is neither target runtime discovery nor post-write proof.
+
+| Runtime | Candidate entrypoints and evidence boundary |
+|---|---|
+| Codex | `$pr open` / `$pr ship` project CLI/IDE skill mentions; `/skills` provides selection. [Skills documentation](https://learn.chatgpt.com/docs/build-skills) describes repository `.agents/skills/` discovery and optional `agents/openai.yaml` policy `allow_implicit_invocation: false`. Verify the actual client; do not assume identical syntax on every app surface. |
+| Claude Code | `/pr open` / `/pr ship` apply only when that skill name is registered. [Skills documentation](https://code.claude.com/docs/en/skills) describes trailing arguments through `$ARGUMENTS` or appended text, source-dependent namespacing/collisions, and `disable-model-invocation`. Managed permission rules can override skill `allowed-tools`; verify effective permissions. |
+| Pi | `/skill:pr open` / `/skill:pr ship` project [skill commands](https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/docs/skills.md); trailing text becomes the user request. `enableSkillCommands` controls interactive discovery; manually entered commands still work. The [coding-agent README](https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/README.md) says subagents and plan mode are not bundled; discover an approved extension or equivalent isolated execution instead of assuming delegation. |
+| Hermes | `/pr open` / `/pr ship` project [installed-skill commands with task text](https://hermes-agent.nousresearch.com/docs/user-guide/cli). [Command documentation](https://hermes-agent.nousresearch.com/docs/reference/slash-commands) gives built-ins collision priority and `/skill <name>` as a loading fallback, subject to messaging privileges. [Skills documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) describes the primary `~/.hermes/skills/` location and configured external directories. Verify the actual CLI/TUI/gateway surface, discovery, fallback, and action argument delivery. |
+
+Native invocation controls may be proposed only in the approved target mapping;
+this portable source adds no runtime configuration. Implicit discovery or loading
+never grants publishing authority, even where automatic matching remains enabled.
+Skill support alone proves neither delegation, permission enforcement, sandboxing,
+nor checkpoint/resume support. Preserve OpenCode and other hosts through the same
+evidence-based discovery gate, without inferring their invocation from this table.
+
+For selected actions, discover Git state/diff and exact host/repository/fork PR
+lookup; selected commit/push/create/update permissions; and safe selective state
+preservation and partial-effect reconciliation. `ship` additionally needs current
+GitHub or other host check/rule/log evidence, authorized bounded rerun capability
+when selected, and isolated independent review. Record actual checkpoint/resume
+behavior and approved record homes only when needed; invent no storage path.
+`open` can stand alone with its declared capabilities. `ship` repair requires an
+existing approved lifecycle/roles/scope and retry provenance; selecting it does
+not install or authorize a missing full workflow. Unknown required capabilities
+remain `blocked` under discovery rules until resolved; unsupported mechanisms
+need an approved translation or explicit omission, never silent single-agent
+collapse.
+
+Native acceptance evidence for the selected actions must cover:
+
+- registration, action/argument delivery, collisions, and implicit loading without
+  mutation authority;
+- exact repository/fork PR reuse, selected/unrelated work preservation, and
+  recovery after partial commit, push, or PR creation;
+- current head/base/tested-revision review/check evidence, freshness, gate
+  acceptance, and actual coverage as distinct claims;
+- repair-scope mapping, cumulative retries, isolated role ordering, effective
+  permissions, and checkpoint/resume limits.
+
+Use safe native diagnostics or approved fixtures; mutation exercises require their
+own authorized target scope. Record unavailable evidence explicitly, and do not
+claim these runtimes have been tested by this portable documentation change.
+
 Suggested adapter files (illustrative and non-normative; do not create these by
 default):
 
@@ -172,6 +230,7 @@ Platform path examples (illustrative and non-normative; verify before use):
 ```text
 Claude   → CLAUDE.md, .claude/agents/, and .claude/skills/
 Codex    → AGENTS.md, .codex/agents/, and .agents/skills/
+Pi       → discovered instruction/skill locations and approved delegation extension
 OpenCode → .opencode/ agents, tools, and plugins
 Hermes   → Hermes skills and tool configuration
 ```

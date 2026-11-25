@@ -56,6 +56,23 @@ Artifact schemas are contracts, not required per-role skills. Read
 `harness-artifacts` definition is retained only as an optional adapter
 translation reference; it is not assigned to every artifact-producing role.
 
+## Optional capabilities
+
+| Skill | Selection and purpose | Origin |
+|---|---|---|
+| [pr](pr/SKILL.md) | Independently selected publication capability coordinated by Main Agent: `open` returns a PR URL; `ship` adds independent review and current checks under approved scope | Original local synthesis |
+
+`pr` is not a required or conditional Main Agent role method. Neither selecting
+Main Agent nor the full workflow installs it; `skills.definitions` lists available
+sources only. Its required supporting assets are [open/reuse](pr/references/open.md)
+and [ship](pr/references/ship.md). Resolve the local source's full commit SHA,
+access date, compatibility, and recursively linked assets before downstream
+approval; translate or reference canonical contracts and rewrite projected links.
+The [canonical PR policy](../SPEC.md#optional-pr-capability) defines behavior;
+[adapter guidance](../adapters/README.md#optional-pr-mapping) defines discovery and
+native invocation evidence. No native command, tool backend, or runtime support
+is supplied by this catalog.
+
 Domain skills can be added without changing the lifecycle:
 
 ```text

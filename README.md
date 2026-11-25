@@ -1,7 +1,7 @@
 # Portable Agent Harness
 
-A platform-neutral concept for coordinating Claude, Codex, OpenCode, Hermes, and
-other AI agents through the same plan-first workflow.
+A platform-neutral concept for coordinating Claude Code, Codex, Pi, OpenCode,
+Hermes, and other AI agents through the same plan-first workflow.
 
 The harness has three layers:
 
@@ -10,7 +10,7 @@ Core workflow + role prompts + artifact schemas + policies
                          ↓
               Knowledge base / project memory
                          ↓
-      Platform adapters: Claude, Codex, OpenCode, Hermes
+      Platform adapters: Claude Code, Codex, Pi, OpenCode, Hermes
 ```
 
 The canonical role is **Main Agent**, but this is a multi-agent workflow: the Main
@@ -111,6 +111,15 @@ is required to honor harness contracts, record it as a local adaptation.
 Unsupported hosts need an approved translation or explicit omission; silent
 source substitution is not allowed. See [`APPLY.md`](APPLY.md) and
 [`skills/README.md`](skills/README.md) for the complete procedure.
+
+The optional [`pr` skill](skills/pr/SKILL.md) is selected independently of the full
+workflow or Main Agent. `open` publishes selected changes and returns the PR URL;
+`ship` adds current independent review and check evidence, with repairs governed
+by existing approved roles and scope. Development still ends at local Finalize,
+and Git-action defaults stay disabled. See the
+[canonical PR policy](SPEC.md#optional-pr-capability)
+and [adapter invocation evidence](adapters/README.md#optional-pr-mapping) before
+projecting a native entrypoint; these sources install no runtime command.
 
 `documentation-and-adrs` uses its single local definition as a `local_adaptation`,
 with historical knowledge-base attribution preserved; it is not an upstream

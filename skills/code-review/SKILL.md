@@ -8,7 +8,9 @@ description: Independently review a change for correctness, scope, regressions, 
 Review against the Ticket, approved Plan, acceptance criteria, and verification
 evidence—not against personal implementation preference.
 Apply [code-quality](../code-quality/SKILL.md) with review depth proportional to
-the scope and risk.
+the scope and risk. Identify the inspected scope and exact revision; for a PR
+review, inspect the entire actual PR diff at recorded head/base SHAs rather than
+only the latest commit or a source run's changed files.
 
 - Check missing behavior, edge cases, regressions, and error handling.
 - Confirm changed files stay within approved scope.
@@ -26,7 +28,16 @@ the scope and risk.
 - Examine security and data handling when the change crosses a sensitive boundary.
 - Separate observed evidence from assumptions; state uncertainty and request the
   smallest missing evidence needed to support a finding.
-- Order findings by severity and include concrete file/line evidence and impact.
-  Distinguish required fixes from optional preferences; zero findings is valid.
+- Order findings by severity. Each finding needs supporting evidence, a location
+  with a line where applicable, a reachable scenario, and concrete impact.
+  Distinguish required fixes from optional preferences; preference alone cannot
+  justify `changes-requested`, and zero findings is valid.
+- Disclose important unassessed coverage and limitations even with zero findings.
+  Use `blocked` when missing material evidence prevents a decision, rather than
+  inventing approval or a defect. A changed revision requires reassessing affected
+  conclusions and evidence.
 
-Do not rewrite the implementation while reviewing it.
+Do not rewrite the implementation while reviewing it. Return the existing
+[Review Result](../../schemas/artifacts.md#review-result); an internal result
+does not authorize posting host reviews/comments/approvals or replace a required
+human review.

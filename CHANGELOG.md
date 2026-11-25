@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Add optional, independently selected `pr` actions `open` and `ship`, with
+  selective publication, current independent review/check evidence, bounded repair,
+  and evidence-backed native mapping guidance for Codex, Claude Code, Pi, and Hermes.
+  Preserve local Finalize, disabled Git-action defaults, and user-controlled merge.
+
 ## [0.3.2] - 2026-10-20
 
 - Require completed Test Engineering and an attributed handoff before the same

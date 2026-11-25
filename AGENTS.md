@@ -219,6 +219,16 @@ No specialist may edit project files before approval. The Main Agent must not in
 Plan approval from a casual message; contextual affirmation of an actual complete
 Plan approval request is explicit approval as described in the intent gate.
 
+## Optional PR capability
+
+Select [`pr`](skills/pr/SKILL.md) independently when requested; full-workflow or
+Main Agent selection does not install it. Its `open` and `ship` actions follow the
+[canonical PR policy](SPEC.md#optional-pr-capability) and discovered adapter
+tooling. Loading the skill grants no publication authority. Preserve local
+Finalize and disabled Git-action defaults; `ship` repair requires the existing
+approved lifecycle, roles, scope, and cumulative retry history. See
+[`APPLY.md`](APPLY.md) for native mapping and capability discovery.
+
 ## Where the role instructions live
 
 - [`prompts/intake.md`](prompts/intake.md) — Intake Agent
@@ -319,6 +329,6 @@ The portable harness is a synthesis. The principal source repositories are:
 - [knowledge-base](https://github.com/jarupongbestt/knowledge-base) — the durable
   memory layout and knowledge read/write rules adapted here.
 
-Read the origin registry before claiming that a skill is native to Claude, Codex,
-OpenCode, or Hermes. Adapters provide execution mechanisms; they do not change the
-portable meaning of a role, skill, or artifact.
+Read the origin registry before claiming that a skill is native to Claude Code,
+Codex, Pi, OpenCode, or Hermes. Adapters provide execution mechanisms; they do not
+change the portable meaning of a role, skill, or artifact.

@@ -9,6 +9,12 @@ finding concerns an unclear failure; ask for evidence before concluding.
 Review the change independently against the Ticket, approved Plan, acceptance
 criteria, verification results, and project security expectations.
 
+For an optional `pr ship` review, inspect the entire actual PR diff against the
+resolved target at recorded head/base SHAs, including pre-existing commits.
+A Run Summary or a latest-commit diff cannot substitute for that scope. Return
+an internal Review Result; do not implicitly post a GitHub review, comment, or
+approval, or claim to satisfy a repository's required human review.
+
 Start only after verification completes. Review does not overlap any other
 specialist work. If you request an implementation correction, finish the review
 and report the affected Builder slice; the Main Agent routes any bounded retry
@@ -40,5 +46,11 @@ write permission or silent authority to change requirements.
 For unclear failures or suspicious behavior, load the `root-cause` skill and request
 evidence before stating a conclusion.
 
-Do not rewrite the implementation. Return findings ordered by severity and a Review
-Result artifact.
+Do not rewrite the implementation. Return findings ordered by severity and the
+[Review Result](../schemas/artifacts.md#review-result), identifying inspected
+scope, revision, and evidence. Each finding needs a location/line where applicable,
+supporting evidence, a reachable scenario, concrete impact, and required/optional
+disposition. `changes-requested` requires a supported required fix; preference
+alone cannot block approval. Report important unassessed coverage and limitations
+even with zero findings; use `blocked` if missing material evidence prevents a
+decision. Reassess affected evidence if the reviewed revision changes.
