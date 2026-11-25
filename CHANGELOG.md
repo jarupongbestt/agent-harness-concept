@@ -2,10 +2,27 @@
 
 ## [Unreleased]
 
-- Add optional, independently selected `pr` actions `open` and `ship`, with
-  selective publication, current independent review/check evidence, bounded repair,
-  and evidence-backed native mapping guidance for Codex, Claude Code, Pi, and Hermes.
-  Preserve local Finalize, disabled Git-action defaults, and user-controlled merge.
+## [0.4.0] - 2026-11-25
+
+- Add optional, independently selected `pr` actions: `open` audits and publishes
+  selected changes, creates or reuses the exact open PR, and returns its URL;
+  `ship` adds independent full-diff review, current revision CI evidence, and
+  bounded repair through the existing approved lifecycle, scope, and retry history.
+- Distinguish raw check conclusions, repository gate acceptance, and actual
+  execution coverage. Require evidence-backed review findings, disclose coverage
+  limits, and reassess affected evidence when head or base revisions change.
+- Add evidence-backed candidate native mappings for Codex, Claude Code, Pi, and
+  Hermes, with target discovery and native verification still required. Preserve
+  OpenCode support, local Finalize, disabled Git-action defaults, and
+  user-controlled merge; the portable sources install no runtime commands.
+- Replace the local `karpathy-guidelines` name with shared `code-quality` guidance
+  for suitable reuse, traceable state and flow, useful abstractions, domain names,
+  rationale comments, and readable tests, retaining the four original principles
+  and required safeguards. Align role mappings and retain provenance and licenses.
+- Expand scoped code review to assess cohesion, consequential duplication, and
+  code made unused by the change, proportionate to risk and available evidence,
+  without mandatory file-size rules, patterns, or broad cleanup. Separate required
+  fixes from preferences; zero findings is valid.
 
 ## [0.3.2] - 2026-10-20
 
