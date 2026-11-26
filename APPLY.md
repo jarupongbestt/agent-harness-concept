@@ -176,7 +176,22 @@ and `references/ship.md`, and recursive links before approval. Project only the
 approved native skill integration, rewriting links. See the
 [canonical PR policy](SPEC.md#optional-pr-capability) and
 [adapter evidence and acceptance requirements](adapters/README.md#optional-pr-mapping)
-for invocation, tooling, permissions, delegation, and checkpoint/resume discovery.
+for invocation, actual check/log tooling and permissions, delegation, active-session
+and wait limits, invocation endings, approved checkpoints/record homes, and
+observed resume behavior in the selected runtime. `ship` maps a Main Agent bounded
+host-CI watch/poll loop with cumulative budgets; foreground observation and manual
+resume suffice. An invocation ending while waiting with allowance left may return
+`pending`; exhausted count/deadline or unavailable required material evidence is
+`blocked`.
+Resume the same operation only after reconciling authority, exact PR/revision,
+completed/partial effects, and counters, without duplicate publication or budget
+resets. Optional background/event/webhook wake-up requires discovered support,
+configuration, authority, and actual delivery/resumption evidence; creating CI
+alone installs no listener and promises no notification or automatic agent restart.
+Verify the adapter's acceptance cases, including pending-to-pass, approved repair
+and fresh-revision review/checks, unavailable evidence, exhausted budgets,
+interrupted/partial publication, unsupported wake-up, and revision movement.
+Missing CI does not authorize setup or turn local checks into remote success.
 
 Inspect the target project and platform before asking scope or configuration
 questions. Ask only questions still unresolved by that inspection and relevant
@@ -252,10 +267,10 @@ When the user asks to apply this harness:
    selected capabilities; a conditional invocation trigger controls when a role
    uses a skill, not whether it is installed. Do not install skills for
    unselected roles or capabilities. For each selected skill, use exactly one
-   definition and follow its `harness.yaml` materialization policy: the four
+   definition and follow its `harness.yaml` materialization policy: the three
    direct candidates
-   (`context-engineering`, `test-driven-development`, `security-and-hardening`,
-   and `doubt-driven-development`) default to the
+   (`context-engineering`, `test-driven-development`, and
+   `doubt-driven-development`) default to the
    upstream `SKILL.md` at a resolved full commit SHA when compatibility review
    passes. Use that skill's local definition only as a recorded fallback when
    the upstream candidate is unavailable or has a source-specific format or
@@ -265,6 +280,24 @@ When the user asks to apply this harness:
    skill as unsupported. Other skills follow their local defaults and
    optional-method mappings in `harness.yaml`; a same-slug candidate or alias
    is not automatic equivalence.
+
+   `security-and-hardening` uses the single local `local_adaptation`; the former
+   addyosmani same-slug candidate is excluded, not a fallback or duplicate method.
+   Resolve the actual selected local source's full commit SHA, access date,
+   compatibility, and assets before application approval. Include its required
+   `references/boundary-cases.md` and `LICENSE`, retain the notice, and rewrite
+   links into approved destinations. The pinned Cloudflare influence records
+   provenance, not the revision of the local adaptation. See
+   [source and asset decisions](skills/origins.md#security-and-hardening-adaptation).
+   Preserve the [conditional role triggers](AGENTS.md#canonical-role-to-skill-map):
+   ordinary scope/planning information or the actual diff identifies a concrete
+   affected data, permission, or action boundary and operation, including indirect
+   private caches, derived data, and exports. Titles and security keywords alone
+   neither trigger nor exclude it. Load only relevant skill/reference sections;
+   add no mandatory per-task screening, field, checklist, scan, report, specialist
+   invocation, gate, or universal loading. Main Agent coordinates normally and
+   Verifier runs existing approved checks; existing roles, lifecycle, and test
+   handoffs apply. A full audit needs separately approved scope.
 
    Read the chosen `SKILL.md` and recursively inspect its linked files and
    references. Include every required skill-local asset and any required

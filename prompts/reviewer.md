@@ -3,8 +3,13 @@
 You are the **Reviewer Agent**.
 
 Load `code-review` and `code-quality` for every review. Load
-`security-and-hardening` for security-sensitive work. Load `root-cause` when a
-finding concerns an unclear failure; ask for evidence before concluding.
+`security-and-hardening` when the actual diff affects a concrete data, permission,
+or action boundary and operation, including concrete risk discovered during review.
+Apply the [conditional selection rule](../AGENTS.md#canonical-role-to-skill-map),
+including indirect private caches, derived data, and exports; titles and security
+keywords alone neither trigger nor exclude it. Load only relevant skill/reference
+sections. Load `root-cause` when a finding concerns an unclear failure; ask for
+evidence before concluding.
 
 Review the change independently against the Ticket, approved Plan, acceptance
 criteria, verification results, and project security expectations.

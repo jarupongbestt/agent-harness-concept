@@ -261,17 +261,27 @@ names the skill and its trigger. These are the canonical mappings:
 |---|---|---|---|
 | Main Agent | `context-engineering`, `clarification`, `knowledge-base` | `doubt-driven-development` for non-trivial, high-stakes, unfamiliar, or hard-to-verify decisions; `human-readable-communication` for long or complex explanations, user-facing Plan presentations, and reports | `schemas/artifacts.md` |
 | Intake | `specification`, `clarification`, `source-driven-development`, `knowledge-base` | `root-cause` for bugs or failures | `schemas/artifacts.md` |
-| Planner | `task-decomposition`, `context-engineering`, `source-driven-development`, `knowledge-base` | `root-cause` for a bug when Intake evidence is incomplete, contradictory, or insufficient to justify the plan; `code-quality` when choosing new or changed dependencies, shared abstractions, or state boundaries | `schemas/artifacts.md` |
-| Test Engineer | `test-driven-development` | `code-quality` when adding or changing helpers, fixtures, or nontrivial setup or assertions | `schemas/artifacts.md` |
-| Implementer / Builder | `code-quality`, `incremental-implementation` | `root-cause` before retrying a failed check; `security-and-hardening` when touching sensitive boundaries | `schemas/artifacts.md` |
+| Planner | `task-decomposition`, `context-engineering`, `source-driven-development`, `knowledge-base` | `root-cause` for a bug when Intake evidence is incomplete, contradictory, or insufficient to justify the plan; `code-quality` when choosing new or changed dependencies, shared abstractions, or state boundaries; `security-and-hardening` when a concrete affected data, permission, or action boundary and operation require security invariants, acceptance criteria, or validation planning | `schemas/artifacts.md` |
+| Test Engineer | `test-driven-development` | `code-quality` when adding or changing helpers, fixtures, or nontrivial setup or assertions; `security-and-hardening` when authoring relevant security tests for a concrete affected data, permission, or action boundary and operation whose required behavior lacks sufficient existing coverage | `schemas/artifacts.md` |
+| Implementer / Builder | `code-quality`, `incremental-implementation` | `root-cause` before retrying a failed check; `security-and-hardening` when implementation affects an identified data, permission, or action boundary and operation | `schemas/artifacts.md` |
 | Verifier | None | — | `schemas/artifacts.md` |
-| Reviewer | `code-review`, `code-quality` | `security-and-hardening` for security-sensitive work; `root-cause` when findings concern an unclear failure | `schemas/artifacts.md` |
+| Reviewer | `code-review`, `code-quality` | `security-and-hardening` when the actual diff affects a concrete data, permission, or action boundary and operation, including concrete risk discovered during review; `root-cause` when findings concern an unclear failure | `schemas/artifacts.md` |
 | Knowledge Curator | `knowledge-base`, `documentation-and-adrs` | — | `schemas/artifacts.md` |
 
 `knowledge-base` is required for Main Agent, Intake, and Planner in the full
 workflow and in partial scopes that include knowledge management. A selected-role
 adoption without knowledge management may omit it with an explicit outside-scope
 reason; this is an adoption boundary, not a per-run opt-in.
+
+Select conditional `security-and-hardening` from ordinary scope/planning
+information or the actual diff identifying a concrete affected data, permission,
+or action boundary and operation, including indirect private caches, derived data,
+and exports. Task titles and security keywords alone neither trigger nor exclude
+the method. Load only relevant skill/reference sections. Selection adds no
+mandatory per-task screening, field, checklist, scan, report, specialist invocation,
+gate, or universal skill loading. Main Agent coordinates normally; Verifier runs
+existing approved checks. Neither receives a new security skill assignment.
+A full audit needs separately approved scope; existing roles and lifecycle apply.
 
 `doubt-driven-development` belongs to orchestration: the Main Agent can send the
 smallest relevant artifact and its contract to a fresh-context Reviewer with an
@@ -285,9 +295,9 @@ fields live in `schemas/artifacts.md`; adapters may consult the existing
 
 When applying this harness, materialize skills only for selected roles and
 capabilities, using exactly one definition per method. Resolve source selection
-from `harness.yaml` before approval: the four direct candidates
-(`context-engineering`, `test-driven-development`, `security-and-hardening`,
-`doubt-driven-development`) use upstream definitions
+from `harness.yaml` before approval: the three direct candidates
+(`context-engineering`, `test-driven-development`, `doubt-driven-development`)
+use upstream definitions
 when compatibility review passes, with local definitions only as recorded
 fallbacks. Other skills follow their local defaults and optional-method
 mappings. Record the chosen source, resolved full commit SHA, access date, and
@@ -295,6 +305,15 @@ supporting assets in the approval packet. Harness contracts take precedence; a
 body changed for compatibility is a local adaptation. Unsupported native skill
 loading requires an approved translation or explicit omission, never silent
 substitution. See [`APPLY.md`](APPLY.md) for the application procedure.
+
+`security-and-hardening` uses one local definition classified as
+`local_adaptation`; the former addyosmani same-slug candidate is excluded.
+Resolve the actual selected local source's full commit SHA, access date,
+compatibility, and assets before application approval. Include its required
+`references/boundary-cases.md` and `LICENSE`, retain the license notice, and
+rewrite links into approved destinations. The pinned Cloudflare influence is
+provenance, not the local adaptation's revision. See
+[source and asset decisions](skills/origins.md#security-and-hardening-adaptation).
 
 `documentation-and-adrs` uses its single local definition as a `local_adaptation`,
 with historical knowledge-base attribution preserved; it is not an upstream

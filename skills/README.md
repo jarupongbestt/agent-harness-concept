@@ -25,7 +25,7 @@ copy of the role prompt.
 | incremental-implementation | Implementer | Required; implement one approved slice with bounded scope | Adapted from template-harness |
 | test-driven-development | Test Engineer | Required when tests are authored or changed; derive behavior from criteria | Synthesized from template-harness + test-design practice |
 | code-review | Reviewer | Required; inspect correctness, scope, regressions, and maintainability | Synthesized from template-harness + code-review practice |
-| security-and-hardening | Reviewer, Implementer | Conditional when work crosses sensitive boundaries | Synthesized from template-harness + secure-development practice |
+| [security-and-hardening](security-and-hardening/SKILL.md) | Planner, Test Engineer, Implementer, Reviewer | Planner: when a concrete affected data, permission, or action boundary and operation require security invariants, acceptance criteria, or validation planning; Test Engineer: when authoring relevant security tests for a concrete affected data, permission, or action boundary and operation whose required behavior lacks sufficient existing coverage; Implementer: when implementation affects an identified data, permission, or action boundary and operation; Reviewer: when the actual diff affects a concrete data, permission, or action boundary and operation, including concrete risk discovered during review | Local adaptation influenced by Cloudflare security-audit-skill, retaining historical template-harness and secure-development provenance |
 | documentation-and-adrs | Knowledge Curator | Required for every full-workflow knowledge assessment and included partial knowledge scope | Local adaptation of knowledge-base |
 | knowledge-base | Main Agent, Intake, Planner, Knowledge Curator | Required for full workflow and partial scopes including knowledge; use the configured system | Adapted from knowledge-base |
 | [code-quality](code-quality/SKILL.md) | Implementer, Reviewer; conditional Planner, Test Engineer | Required for Implementer and Reviewer; Planner when choosing new or changed dependencies, shared abstractions, or state boundaries; Test Engineer when adding or changing helpers, fixtures, or nontrivial setup or assertions | Local adaptation of Ponytail and Minimize Reader Load, retaining the historical Karpathy principles |
@@ -37,9 +37,19 @@ applies to all skills: the role prompt owns the stage and the skill supplies a
 method only when its trigger applies. `doubt-driven-development` belongs to the
 Main Agent's orchestration and must not be placed in the Reviewer persona.
 
+Select `security-and-hardening` from ordinary scope/planning information or the
+actual diff identifying the concrete affected boundary and operation, including
+indirect private caches, derived data, and exports. Titles and security keywords
+alone neither trigger nor exclude it. Load only relevant skill/reference sections;
+selection adds no mandatory per-task screening, field, checklist, scan, report,
+specialist invocation, gate, or universal loading. Main Agent coordinates normally;
+Verifier runs existing approved checks. The existing roles, test handoffs, and
+`action: none` no-stage rule remain authoritative. A full audit needs separately
+approved scope. See the [canonical map](../AGENTS.md#canonical-role-to-skill-map).
+
 `human-readable-communication` guides the Main Agent's user-facing presentation.
 Short messages use the bootstrap policy; specialist English artifacts keep their
-contracts. Its local definition is the materialization default, not a fifth
+contracts. Its local definition is the materialization default, not a
 direct upstream candidate. See [`origins.md`](origins.md) for the pinned influence,
 retained license, and intentionally omitted upstream assets.
 
@@ -98,9 +108,8 @@ SHA, access date, compatibility decision, and required/included/omitted
 supporting assets in the approval packet. Mutable refs such as `main` must be
 resolved at application time.
 
-The four direct candidates (`context-engineering`, `test-driven-development`,
-`security-and-hardening`, and
-`doubt-driven-development`) use their upstream `SKILL.md` definitions when
+The three direct candidates (`context-engineering`, `test-driven-development`,
+and `doubt-driven-development`) use their upstream `SKILL.md` definitions when
 compatibility review passes. Their local definitions are recorded fallbacks
 only when the upstream candidate is unavailable or has a source-specific format
 or compatibility issue and the host can load the local definition natively.
@@ -109,6 +118,16 @@ for a translation into a supported native mechanism or explicitly omit the
 skill as unsupported. Other skills follow the registry's local defaults and
 optional-method mappings; aliases and same-slug candidates are not automatic
 equivalents.
+
+`security-and-hardening` uses one local definition classified as
+`local_adaptation`; the former addyosmani same-slug candidate is excluded, with
+no duplicate `security-audit` skill. Resolve the actual selected local source's
+full commit SHA, access date, compatibility, and assets before application approval.
+Include its required [boundary cases](security-and-hardening/references/boundary-cases.md)
+and [LICENSE](security-and-hardening/LICENSE), retain the notice, and rewrite links
+into approved destinations. The pinned Cloudflare influence records provenance,
+not the local adaptation's revision. See
+[source and asset decisions](origins.md#security-and-hardening-adaptation).
 
 `documentation-and-adrs` uses its single local definition as a `local_adaptation`,
 with historical knowledge-base attribution preserved; it is not an upstream

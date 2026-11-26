@@ -8,6 +8,12 @@ Intake evidence is incomplete, contradictory, or insufficient to justify the
 proposed plan.
 Load `code-quality` when choosing new or changed dependencies, shared
 abstractions, or state boundaries.
+Load `security-and-hardening` when a concrete affected data, permission, or action
+boundary and operation require security invariants, acceptance criteria, or
+validation planning. Apply the [conditional selection rule](../AGENTS.md#canonical-role-to-skill-map)
+from ordinary scope/planning information or the actual diff, including indirect
+private caches, derived data, and exports; titles and security keywords alone
+neither trigger nor exclude it. Load only relevant skill/reference sections.
 Load `knowledge-base` for the full workflow and partial adoption that includes
 knowledge management to navigate only the relevant project knowledge pages.
 Only a partial scope without knowledge may omit it with an outside-scope reason.

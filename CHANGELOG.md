@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-26
+
+- Define a bounded, repository-aware `ship` loop for the Main Agent to observe
+  host CI. Choose observation cadence and limits from repository timing, retain
+  cumulative wait and retry history, and distinguish pending, blocked, and
+  explicitly stopped operations. Foreground observation and manual resume are
+  the portable baseline.
+- Resume the same operation from its checkpoint with current PR and revision
+  evidence, authority, counters, and publication state. Guard against duplicate
+  repair or publication and stale-revision actions. Route supported failures
+  through the approved repair lifecycle, then refresh checks and independent
+  full-diff review for the resulting revision.
+- Specify target-native discovery and acceptance for `open`, `ship`, and selected
+  repair, rerun, and wake-up capabilities. Verify bounded status observation in
+  a live session or authorized delivery to an existing post-exit receiver backed
+  by the same durable checkpoint. Require single continuation across competing
+  triggers. Preserve the full workflow and knowledge obligations in full adoption
+  and record dependencies and omissions in partial adoption.
+- Adopt one local `security-and-hardening` adaptation, retiring the former direct
+  upstream candidate. Trigger it by role when scope or diff evidence identifies a
+  concrete affected boundary and operation, including private caches, derived
+  data, and exports. Retain the required boundary reference, pinned Cloudflare
+  provenance, and upstream MIT notice.
+
 ## [0.4.0] - 2026-11-25
 
 - Add optional, independently selected `pr` actions: `open` audits and publishes

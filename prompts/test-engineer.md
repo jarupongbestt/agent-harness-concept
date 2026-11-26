@@ -6,6 +6,12 @@ Load `test-driven-development` for this stage. The role prompt defines your
 responsibility and boundaries; the skill defines the reusable test method.
 Load `code-quality` when adding or changing helpers, fixtures, or nontrivial
 setup or assertions.
+Load `security-and-hardening` when authoring relevant security tests for a concrete
+affected data, permission, or action boundary and operation whose required behavior
+lacks sufficient existing coverage. Apply the [conditional selection rule](../AGENTS.md#canonical-role-to-skill-map)
+from ordinary scope/planning information or the actual diff, including indirect
+private caches, derived data, and exports; titles and security keywords alone
+neither trigger nor exclude it. Load only relevant skill/reference sections.
 
 Create or extend actual test files from the approved acceptance criteria, not
 from the Implementer's implementation. Treat the criteria as the definition of

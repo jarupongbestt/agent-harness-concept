@@ -27,8 +27,13 @@ it does not establish authorship, origin, equivalence, or compatibility.
   source and record its resolved full commit SHA and access date in the
   application artifact. Do not treat a research-time SHA as an installation lock.
 - Exact same-slug direct candidates are listed for `context-engineering`,
-  `test-driven-development`, `security-and-hardening`,
-  and `doubt-driven-development`. They are candidates, not presumed compatible.
+  `test-driven-development`, and `doubt-driven-development`. They are candidates,
+  not presumed compatible.
+- `security-and-hardening` uses its single local definition as a
+  `local_adaptation`. The `addyosmani/agent-skills` same-slug candidate is excluded
+  from this method's source selection in favor of the reviewed local adaptation;
+  matching names do not establish equivalent methods. See the
+  [adaptation record](#security-and-hardening-adaptation).
 - `source-driven-development` remains local by default. Its upstream same-slug
   candidate is a narrower optional method for framework-documentation decisions,
   not an automatic replacement.
@@ -60,7 +65,7 @@ it does not establish authorship, origin, equivalence, or compatibility.
 | `incremental-implementation` | Adapted | [template-harness](https://github.com/jarupongbestt/template-harness) | One approved slice at a time, smallest coherent change, no silent scope expansion |
 | `test-driven-development` | Synthesized | [template-harness](https://github.com/jarupongbestt/template-harness); test-design / acceptance-criteria practice | Tests are derived from behavior and are separated from the Implementer's design |
 | `code-review` | Synthesized | [template-harness](https://github.com/jarupongbestt/template-harness); standard code-review practice | Independent review of correctness, scope, regressions, and test quality |
-| `security-and-hardening` | Synthesized | [template-harness](https://github.com/jarupongbestt/template-harness); standard secure-development practice | Risk-based scrutiny of sensitive boundaries and unsafe assumptions |
+| `security-and-hardening` | Local adaptation | [Cloudflare security-audit-skill](https://github.com/cloudflare/security-audit-skill/tree/d24bc269171a9171fac58493e0ffba511d571a4a); historical [template-harness](https://github.com/jarupongbestt/template-harness) and secure-development practice | Conditional, evidence-backed scrutiny of concrete affected boundaries, including private derived data; bounded validation and proportionate corrections within existing roles |
 | `documentation-and-adrs` | Local adaptation | [knowledge-base](https://github.com/jarupongbestt/knowledge-base) | Record durable decisions, constraints, procedures, and recurring failures |
 | `harness-artifacts` | Synthesized | [agent-harness](https://github.com/jarupongbestt/agent-harness) | Preserve structured artifact contracts and evidence fields across roles |
 | `knowledge-base` | Adapted | [knowledge-base](https://github.com/jarupongbestt/knowledge-base) | Navigate, update, and lint the durable knowledge tree |
@@ -124,7 +129,7 @@ security work, or required checks. No upstream workflow, runtime, or executable
 scaffolding is imported. Its registry default is the single local definition;
 applications still resolve that local source's full commit SHA, access date,
 compatibility, and assets before approval. The pinned influences are provenance,
-not additional materialization sources or a fifth direct candidate.
+not additional materialization sources or another direct candidate.
 
 Supporting-asset decisions:
 
@@ -145,7 +150,7 @@ resolved at commit `7d4a135a199a5d7447c4886bcd7ffe742a627bc9` and accessed
 `references/writing-rules.md`, `examples/before-after.md`, `scripts/ste-lint.py`,
 and `LICENSE`. This is a `local_adaptation`, not a direct upstream copy or an
 ASD-STE100 compliance claim. Its materialization default is the single
-[local definition](human-readable-communication/SKILL.md); the four existing
+[local definition](human-readable-communication/SKILL.md); the three
 direct candidates retain their policies. Applications still resolve the chosen
 local source and supporting assets before approval.
 
@@ -168,6 +173,80 @@ Supporting-asset decisions:
 - `scripts/ste-lint.py`: omitted; hard English word caps and punctuation checks
   are incompatible with the approved multilingual method. No replacement linter
   or automatic rewriting mechanism is introduced.
+
+## Security and hardening adaptation
+
+`security-and-hardening` uses one [local definition](security-and-hardening/SKILL.md)
+classified as `local_adaptation`. Its historical template-harness and
+secure-development influences remain in the table above. The additional influence
+is [Cloudflare security-audit-skill](https://github.com/cloudflare/security-audit-skill/tree/d24bc269171a9171fac58493e0ffba511d571a4a),
+commit `d24bc269171a9171fac58493e0ffba511d571a4a`, accessed 2026-11-25.
+The inspected immutable source is not a claim about latest HEAD; mutable-main
+views differed during source resolution.
+
+The adaptation retains concrete boundary tracing, examination of existing
+controls and plausible refutations, evidence-limited conclusions, minimal safe
+validation, and the smallest effective correction. It adds local conditional
+selection from ordinary scope or the actual diff, including indirect private
+data paths. It distinguishes supported defects, exact evidence gaps, and optional
+hardening within existing artifact contracts. Missing best practices alone do
+not establish a vulnerability.
+
+Compatibility choices preserve existing role ownership, approval, test handoffs,
+retry policy, and independent Reviewer assessment. No nested audit agents,
+six-phase orchestration, coverage ledger, new report schema or statuses, audit
+output tree, validators, sandbox implementation, runtime integration, or permanent
+Security Agent are imported. Existing approved tests keep their normal runtime
+and permission controls; adversarial validation stays local, isolated, bounded,
+and within verified permissions. An unsafe or unavailable decisive check leaves
+an exact evidence gap and safe resolving check. No mandatory per-task screening,
+field, checklist, scan, report, invocation, gate, or universal loading is added.
+A full audit requires separately approved scope.
+
+The local supporting assets are required and included:
+
+- [references/boundary-cases.md](security-and-hardening/references/boundary-cases.md)
+  is a short, selectively loaded set of examples; the entry skill owns the method.
+- [LICENSE](security-and-hardening/LICENSE) preserves the complete, unmodified
+  upstream MIT notice, including `Copyright (c) 2025-2026 Cloudflare, Inc.`.
+  Downstream copies or substantial portions must retain the copyright and
+  permission notice.
+
+Source-asset inventory at the pinned commit follows. Paths without a root prefix
+are under `skills/security-audit/`. Each disposition is intentional; links to
+omitted companions and audit machinery are not projected into the local method.
+
+| Source asset | Disposition and reason |
+|---|---|
+| [`SKILL.md`](https://raw.githubusercontent.com/cloudflare/security-audit-skill/d24bc269171a9171fac58493e0ffba511d571a4a/skills/security-audit/SKILL.md) | Translated selected core evidence and safe-validation principles into the local entry; audit setup and orchestration are outside conditional-guidance scope. |
+| [`ATTACK-CLASSES.md`](https://raw.githubusercontent.com/cloudflare/security-audit-skill/d24bc269171a9171fac58493e0ffba511d571a4a/skills/security-audit/ATTACK-CLASSES.md) | Translated selected boundary prompts into the local reference; broad class coverage and agent assignments are outside scope. |
+| [`DATA-ISOLATION-AND-LIFECYCLE.md`](https://raw.githubusercontent.com/cloudflare/security-audit-skill/d24bc269171a9171fac58493e0ffba511d571a4a/skills/security-audit/DATA-ISOLATION-AND-LIFECYCLE.md) | Translated selected private derived-data, cache, export, and lifecycle cases into the reference; domain-wide hunting is outside scope. |
+| [`VALIDATION-AND-REPORTING.md`](https://raw.githubusercontent.com/cloudflare/security-audit-skill/d24bc269171a9171fac58493e0ffba511d571a4a/skills/security-audit/VALIDATION-AND-REPORTING.md) | Translated evidence and refutation reasoning into the entry; audit reporting and verifier orchestration are outside scope. |
+| [Root `README.md`](https://raw.githubusercontent.com/cloudflare/security-audit-skill/d24bc269171a9171fac58493e0ffba511d571a4a/README.md) | Referenced for source scope and asset inventory; installer instructions are not copied or run. |
+| [Root `LICENSE`](https://raw.githubusercontent.com/cloudflare/security-audit-skill/d24bc269171a9171fac58493e0ffba511d571a4a/LICENSE) | Included unmodified at the skill-local license path to preserve MIT obligations. |
+| `RECONNAISSANCE.md` | Omitted; full-audit reconnaissance is outside conditional-guidance scope. |
+| `HUNTING.md` | Omitted; hunting waves and coverage orchestration are outside conditional-guidance scope. |
+| `AI-AND-LLM.md` | Omitted; the domain-wide audit catalog is outside the selected boundary examples. |
+| `WEB-PROTOCOL-AND-AUTH.md` | Omitted; protocol-wide audit coverage is outside the selected boundary examples. |
+| `CLIENT-SIDE.md` | Omitted; browser-wide audit coverage is outside the selected boundary examples. |
+| `MEMORY-SAFETY-AND-BINARY.md` | Omitted; native and binary audit coverage is outside the selected boundary examples. |
+| `SUPPLY-CHAIN-AND-RELEASE.md` | Omitted; release-wide audit coverage is outside the selected boundary examples. |
+| `CLOUD-AND-DEPLOYMENT.md` | Omitted; deployment-wide audit coverage is outside the selected boundary examples. |
+| `PROTOCOLS-RPC-AND-MESSAGING.md` | Omitted; transport-wide audit coverage is outside the selected boundary examples. |
+| `RESOURCE-EXHAUSTION-AND-AVAILABILITY.md` | Omitted; availability audit coverage is outside the selected boundary examples. |
+| `DESKTOP-MOBILE-AND-LOCAL-IPC.md` | Omitted; platform-wide audit coverage is outside the selected boundary examples. |
+| `report-schema.json` | Omitted; a new audit-record contract is outside scope; existing harness artifacts remain authoritative. |
+| `validate-findings.cjs` | Omitted; audit-report validation is outside scope and no report schema is imported. |
+| `validate-findings.test.cjs` | Omitted; tests for the omitted audit validator are outside scope. |
+| `validate-coverage-ledger.cjs` | Omitted; ledger validation is outside scope and no coverage ledger is imported. |
+| `validate-coverage-ledger.test.cjs` | Omitted; tests for the omitted ledger validator are outside scope. |
+
+Do not install a duplicate `security-audit` skill. The materialization default is
+this single local adaptation, not the former addyosmani same-slug candidate or a
+direct Cloudflare copy. Downstream applications resolve the actual selected local
+adaptation's full commit SHA, access date, compatibility, and supporting assets
+before approval, then rewrite links into approved destinations. The Cloudflare
+pin records influence provenance; it is not the revision of future local copies.
 
 ## Provenance rules for future skills
 

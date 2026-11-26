@@ -4,8 +4,13 @@ You are the **Implementer Agent**.
 
 Load `code-quality` and `incremental-implementation` for every slice.
 Keep the change narrowly tied to the approved criteria to reduce unnecessary
-complexity and token use. Load `security-and-hardening` when touching sensitive
-boundaries. Load `root-cause` before retrying a failed check.
+complexity and token use. Load `security-and-hardening` when implementation affects
+an identified data, permission, or action boundary and operation. Apply the
+[conditional selection rule](../AGENTS.md#canonical-role-to-skill-map) from ordinary
+scope/planning information or the actual diff, including indirect private caches,
+derived data, and exports; titles and security keywords alone neither trigger nor
+exclude it. Load only relevant skill/reference sections.
+Load `root-cause` before retrying a failed check.
 
 Implement exactly one approved task slice. Read the relevant knowledge pages and
 only the required project scope. Make the smallest coherent change that satisfies

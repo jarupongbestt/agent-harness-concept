@@ -112,9 +112,9 @@ permission or authority to silently revise requirements.
 
 Before approval, resolve the source for every selected skill using the registry
 and policy in [`../harness.yaml`](../harness.yaml), then review the exact source
-body for compatibility with the harness. For the four direct candidates
-(`context-engineering`, `test-driven-development`, `security-and-hardening`,
-and `doubt-driven-development`), prefer the upstream
+body for compatibility with the harness. For the three direct candidates
+(`context-engineering`, `test-driven-development`, and
+`doubt-driven-development`), prefer the upstream
 definition when that review passes. Record the repository, path, resolved full
 commit SHA, access date, compatibility decision, and supporting assets in the
 approval packet. The mutable `main` branch is only a lookup ref; resolve its
@@ -124,6 +124,24 @@ or compatibility problem and the host can load the local skill natively; record
 the fallback and reason. A host-wide lack of native skill support never permits
 automatic local fallback. Obtain approval for translation into a supported
 native mechanism or explicitly omit the skill with a reason.
+
+`security-and-hardening` uses the single local `local_adaptation`; the former
+addyosmani same-slug candidate is excluded, not a fallback or duplicate method.
+Resolve the actual selected local source's full commit SHA, access date,
+compatibility, and assets before application approval. Include its required
+`references/boundary-cases.md` and `LICENSE`, retain the notice, and rewrite links
+into approved destinations. The pinned Cloudflare influence records provenance,
+not the revision of the local adaptation. See
+[source and asset decisions](../skills/origins.md#security-and-hardening-adaptation).
+Preserve the [conditional role triggers](../AGENTS.md#canonical-role-to-skill-map):
+ordinary scope/planning information or the actual diff identifies a concrete
+affected data, permission, or action boundary and operation, including indirect
+private caches, derived data, and exports. Titles and security keywords alone
+neither trigger nor exclude it. Load only relevant skill/reference sections;
+add no mandatory per-task screening, field, checklist, scan, report, specialist
+invocation, gate, or universal loading. Main Agent coordinates normally and
+Verifier runs existing approved checks; existing roles, lifecycle, and test
+handoffs apply. A full audit needs separately approved scope.
 
 `documentation-and-adrs` uses its single local definition as a `local_adaptation`,
 with historical knowledge-base attribution preserved; it is not an upstream
@@ -185,29 +203,109 @@ Skill support alone proves neither delegation, permission enforcement, sandboxin
 nor checkpoint/resume support. Preserve OpenCode and other hosts through the same
 evidence-based discovery gate, without inferring their invocation from this table.
 
-For selected actions, discover Git state/diff and exact host/repository/fork PR
-lookup; selected commit/push/create/update permissions; and safe selective state
-preservation and partial-effect reconciliation. `ship` additionally needs current
-GitHub or other host check/rule/log evidence, authorized bounded rerun capability
-when selected, and isolated independent review. Record actual checkpoint/resume
-behavior and approved record homes only when needed; invent no storage path.
-`open` can stand alone with its declared capabilities. `ship` repair requires an
-existing approved lifecycle/roles/scope and retry provenance; selecting it does
-not install or authorize a missing full workflow. Unknown required capabilities
-remain `blocked` under discovery rules until resolved; unsupported mechanisms
-need an approved translation or explicit omission, never silent single-agent
-collapse.
+For `open` or `ship`, discover Git state/diff, exact host/repository/fork PR lookup,
+and selective state preservation and partial-effect reconciliation. Verify the
+actual CLI, API, or connector and effective permissions for selected commit,
+push, create, and update actions. Command examples and general documentation
+alone leave tool availability and access unverified.
 
-Native acceptance evidence for the selected actions must cover:
+For `ship`, also verify access to host rules, check/job state, actual tested
+revisions, and relevant logs, plus bounded Main Agent watch/poll and isolated
+independent full-diff review. Discover rerun permissions or repair dependencies
+when those capabilities are selected, and verify their authorization before use.
+For observation and resume, discover per-call and live-session wait limits,
+permitted cadence, and what ends the invocation or local session. Record the
+operation's repository timing evidence or explicit queue-plus-CI expectation,
+cadence, finite count, and deadline separately from runtime limits. Map an approved
+checkpoint mechanism and purpose-compatible record home when retention is needed.
+Every continuation reconciles current authority, exact PR and head/base, current
+checks and actual tested revision, completed/partial effects, and cumulative
+counters. Use the existing
+[PR Operation Result](../schemas/artifacts.md#pr-operation-result), not a new
+monitor artifact or capability registry.
+
+Bounded foreground observation and manual resume are the portable `ship` baseline
+for Codex, Claude Code, Pi, Hermes, OpenCode, and other hosts. For a selected live
+scheduler, verify that the configured, authorized native mechanism delivers
+bounded status-only observations in a still-live session. `next_observation_at`
+records a planned time and configures no scheduler. When post-exit continuation
+is selected, verify actual delivery and resume through an existing authorized
+receiver and runtime with access to the same approved durable checkpoint. A
+repository event can supply a signal. CI alone supplies no dispatch. Treat
+payloads as untrusted signals.
+Before enabling competing triggers, verify target-native single continuation per
+operation across scheduled, event-triggered, and manual paths. When delivery or
+serialization cannot be verified, use bounded foreground observation and serial
+manual resume.
+
+Follow the [application protocol](../APPLY.md#application-protocol) before
+selecting a wake-up mechanism. Full adoption retains applicable core stages,
+roles, contracts, approval, knowledge management, local Finalize, and disabled
+Git-action defaults. Selected partial adoption includes requested items and their
+explicit dependencies, with omitted items and their reasons recorded.
+
+`open` can stand alone with its declared capabilities and returns the PR URL and
+stops. `ship` repair requires an existing approved lifecycle/roles/scope and retry
+provenance; selecting it does not install or authorize a missing full workflow.
+Unknown required capabilities remain `blocked` under discovery rules until
+resolved; unsupported mechanisms need an approved translation or explicit
+omission, never silent single-agent collapse.
+
+For **either `open` or `ship`**, verify these shared behaviors.
 
 - registration, action/argument delivery, collisions, and implicit loading without
-  mutation authority;
+  mutation authority, plus effective tool permissions for selected actions;
 - exact repository/fork PR reuse, selected/unrelated work preservation, and
-  recovery after partial commit, push, or PR creation;
-- current head/base/tested-revision review/check evidence, freshness, gate
-  acceptance, and actual coverage as distinct claims;
-- repair-scope mapping, cumulative retries, isolated role ordering, effective
-  permissions, and checkpoint/resume limits.
+  same-operation recovery after partial commit, push, or PR creation, including
+  an invocation ending after a partial push and resuming without duplicate
+  publication or reset counters.
+
+For **`open`**, verify that it returns the exact PR URL and stops.
+
+For **`ship`**, verify review, checks, and bounded observation.
+
+- current independent review of the entire PR diff and required gates for the
+  same head/base under actual host rules, with actual tested revision and
+  coverage evidence;
+- queued/pending checks progressing to pass through bounded foreground
+  observation; an invocation ending while waiting with remaining allowance
+  returns `pending`, exhausted count/deadline returns `blocked` without resetting
+  budgets, and only explicit stop returns `stopped`;
+- unavailable required material logs or tested-revision evidence returning
+  `blocked`; cancelled, timed-out, action-required, unknown, and absent checks
+  classified under the
+  [ship procedure](../skills/pr/references/ship.md#observe-within-remaining-allowance),
+  with raw check state, gate acceptance, actual coverage, and operation status
+  reported separately rather than assumed passed;
+- head/base movement invalidating affected evidence; missing CI without setup
+  authority yielding authorized local evidence and explicit remote limitations,
+  with no unapproved CI setup or claim that a required remote gate passed;
+- effective check permissions, checkpoint and record home, observed cadence and
+  per-call/live-session limits, distinct cumulative operation budgets, and
+  resume reconciliation without resetting usage/history on budget changes.
+
+For **selected and authorized `ship` capabilities**, verify the applicable case.
+
+- **Repair** hands off a supported failure with relevant logs, exact
+  PR/head/base/tested revision, approved slice/write authority, and cumulative
+  retry history through existing evidence/result references. Follow existing role
+  ordering, publish verified work to the same PR, and refresh independent
+  full-diff review and checks for the resulting revision.
+- **Infrastructure reruns** use current classified evidence, effective
+  permissions, and the separate bounded cumulative rerun budget.
+- **Wake-up** requires observed authorized delivery for each selected mode. If
+  live scheduling is selected, verify bounded status-only observation. If post-exit
+  delivery is selected, verify resume from the same approved shared durable
+  checkpoint. For competing triggers, verify single continuation across scheduled,
+  event, and manual paths. Stale, duplicate, delayed, or overlapping triggers
+  preserve budgets and leave stopped operations and closed/merged PRs alone.
+  They cannot duplicate repair or publication or cause action on stale revisions.
+
+For `ship`, verify the foreground and serial-manual fallback when optional wake-up
+is unavailable. Check the selected scope and dependencies for every mapping.
+Full adoption keeps all applicable core workflow and knowledge requirements.
+Partial adoption records omissions and needs verified support for every selected
+mechanism.
 
 Use safe native diagnostics or approved fixtures; mutation exercises require their
 own authorized target scope. Record unavailable evidence explicitly, and do not

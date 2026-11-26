@@ -701,8 +701,9 @@ and required gates satisfied under actual host/repository rules, with raw check
 conclusions, actual coverage, and remote limitations reported separately.
 Completion satisfies this action's reporting contract;
 it never implies automatic merge readiness or an unobserved remote pass.
-`pending` records bounded waiting or an approval dependency; `blocked` records
-unavailable required evidence, exhausted budgets, or another unresolved barrier;
+`pending` records bounded waiting or an approval dependency only while operation
+allowance remains; `blocked` records unavailable required material evidence,
+exhausted observation count/deadline, or another unresolved barrier;
 `stopped` records an explicit stop without claiming success. No status implies
 merge or post-merge execution.
 
@@ -711,7 +712,9 @@ work selection, preserved unrelated state, and authority required by the
 [PR policy](../SPEC.md#optional-pr-capability). Closed/merged PRs, no diff,
 ambiguity, and partial effects need explicit outcomes. Reconcile actual
 local/remote state and completed/partial mutations before retry; resume with
-the same operation identity/checkpoint without duplicating commits or PRs.
+the same operation identity/checkpoint, current authority, exact PR/revision, and
+cumulative counters without duplicating commits, pushes, or PRs. A new invocation
+does not reset any allowance.
 
 Every check records the head/base it concerns, actual tested SHA (including a
 test-merge SHA where applicable), URLs for remote runs/checks, outcome, time,
@@ -726,6 +729,18 @@ executing the relevant behavior. Missing required checks still block completion.
 `not_applicable` requires evidence that no gate applies; unknown requirements
 remain `unknown` or `blocked`, never passed.
 
+Keep queued, pending, absent, cancelled, timed-out, action-required, failed,
+unknown, and success observations explicit in `checks.evidence`: preserve exact
+host status in `evidence_ref` and exact conclusion in `raw_conclusion` (possibly
+`null` before a conclusion), using an explained broader `outcome` where needed.
+Raw host state, `checks.gate_status`, `checks.coverage`, and operation `status`
+are separate claims. A defect handoff through `evidence_ref` and existing result
+references supplies exact PR/current head/base/tested revision, run/check/job
+identities and available URLs, relevant failed-log evidence, classification,
+approved slice/write authority, and cumulative attempt/retry history. Explain
+material gaps; never invent SHAs, logs, or authority. No parallel artifact or new
+mandatory field is needed.
+
 Before repair, `approved_slice_mappings` identifies the approved Plan, slice,
 scope, and authorization evidence even when there are no source Run Summaries.
 `budgets.development` carries cumulative slice attempts/retries and history
@@ -736,6 +751,15 @@ or platform failures before treating them as code defects. A budget change
 requires recorded authority and retains usage/history. Re-entry records use the
 exact existing `workflow.reentry` trigger and evidence; a material Plan change
 waits for renewed approval, then resumes this operation.
+
+Main Agent records bounded foreground watch/poll progress in existing
+`checks.evidence`, `budgets.observation_wait` (`limit`, `used`, `deadline`),
+`wait_state` (`reason`, `next_observation_at`), blockers, next permitted action,
+and resume checkpoint. Return the exact PR URL when present, last observation,
+reason, and next action when an invocation ends. Manual resume suffices;
+`next_observation_at` records a planned observation, not an installed wake-up.
+Optional background/event/webhook capability must be discovered, configured, and
+authorized; CI workflow creation proves none.
 
 Use existing development artifact contracts for conditional Test Engineer
 handoff, Builder, Verifier, independent Reviewer, Curator, and current repair

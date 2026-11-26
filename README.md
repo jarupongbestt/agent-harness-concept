@@ -102,8 +102,9 @@ reports, see the portable
 [`human-readable-communication` skill](skills/human-readable-communication/SKILL.md).
 
 When applying the harness, materialize only the skills needed by selected roles
-and capabilities, with exactly one definition per method. The four direct
-upstream candidates use upstream definitions only after compatibility review;
+and capabilities, with exactly one definition per method. The three direct
+upstream candidates (`context-engineering`, `test-driven-development`, and
+`doubt-driven-development`) use upstream definitions only after compatibility review;
 local definitions are recorded fallbacks. Other skills follow local defaults
 and optional-method mappings. Resolve the selected source, full commit SHA,
 access date, and supporting assets before approval. If adapting the skill body
@@ -111,6 +112,19 @@ is required to honor harness contracts, record it as a local adaptation.
 Unsupported hosts need an approved translation or explicit omission; silent
 source substitution is not allowed. See [`APPLY.md`](APPLY.md) and
 [`skills/README.md`](skills/README.md) for the complete procedure.
+
+`security-and-hardening` is one conditional local adaptation for Planner, Test
+Engineer, Builder, and Reviewer. Ordinary scope/planning information or the actual
+diff must identify a concrete affected data, permission, or action boundary and
+operation, including indirect private caches, derived data, and exports. Titles
+and security keywords alone neither trigger nor exclude it. The
+[canonical role triggers](AGENTS.md#canonical-role-to-skill-map) add no mandatory
+per-task screening, new specialist, gate, or universal loading; a full audit needs
+separately approved scope. Resolve the selected local source's actual full commit
+SHA, access date, compatibility, and assets before application approval. Retain
+its required boundary reference and license, and rewrite links; the pinned
+Cloudflare influence is provenance rather than the local adaptation's revision.
+See [source and asset decisions](skills/origins.md#security-and-hardening-adaptation).
 
 The optional [`pr` skill](skills/pr/SKILL.md) is selected independently of the full
 workflow or Main Agent. `open` publishes selected changes and returns the PR URL;
