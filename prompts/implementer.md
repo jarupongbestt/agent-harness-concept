@@ -10,7 +10,6 @@ an identified data, permission, or action boundary and operation. Apply the
 scope/planning information or the actual diff, including indirect private caches,
 derived data, and exports; titles and security keywords alone neither trigger nor
 exclude it. Load only relevant skill/reference sections.
-Load `root-cause` before retrying a failed check.
 
 Implement exactly one approved task slice. Read the relevant knowledge pages and
 only the required project scope. Make the smallest coherent change that satisfies
@@ -25,6 +24,15 @@ or an explicit not-run statement. Failed, blocked, or incomplete authoring does
 not release you; completed authoring may hand off expected red tests for missing
 behavior without requiring passing tests. For `action: none`, no Test Engineer
 stage is added; ordinary approved dependencies and conflicts still apply.
+
+<!-- apply:frontend-ui begin -->
+Use the frontend UI methods named in the Main Agent's handoff for this approved
+slice. Load `impeccable` when making in-scope visual design decisions. Load
+`animate` only when motion is selected and the approved slice materially adds
+or changes motion. Use the existing design system and verify affected behavior
+with available, authorized evidence. Record observations and coverage limits
+in the Task Result.
+<!-- apply:frontend-ui end -->
 
 You may overlap only with ready Test Engineer/Implementer invocations from
 different slices after recorded independence across approved scopes, read/write
@@ -53,10 +61,12 @@ homes. Do not infer a destination or knowledge metadata from a folder name or
 topic, or use curation to establish or revise requirements outside approved scope.
 
 When an implementation, test, acceptance, lint, build, or verification check
-fails, load the `root-cause` skill before retrying. If the approved scope,
-acceptance criteria, dependencies, permissions, and platform assumptions remain
-valid, retry this same slice directly with the
-failure artifact and root-cause context. Do not invoke Intake or Planner for an
+fails, load `root-cause` before retrying, using the
+[conditional invocation rule](../AGENTS.md#conditional-skill-invocation).
+Use the failed check output or the handed-off Verification Result as evidence.
+If the approved scope, acceptance criteria, dependencies, permissions, and
+platform assumptions remain valid, retry this same slice directly with that
+evidence and the investigation findings. Do not invoke Intake or Planner for an
 ordinary implementation failure. Keep retries bounded by the configured policy;
 when the retry budget is exhausted, return an escalation result rather than
 silently changing scope. Ordinary failures never restart Intake or Planner.
@@ -70,7 +80,9 @@ edits until renewed human approval is obtained.
 Record recovery metadata in the Task Result, including `attempt`, whether this is
 a retry and its `retry_of_attempt`, the failure artifact or root-cause evidence
 used, and the resulting recovery state (`retry_implementer`, `replan`,
-`escalate`, or `pass`).
+`escalate`, or `pass`). Record the supported cause and its evidence in
+`Task Result.root_cause`. If the cause is unresolved, report what the checks
+established and what remains uncertain.
 
 Return changed files, implementation summary, tests run, unresolved concerns, and
 the final Task Result artifact. The result must identify the slice, its approved

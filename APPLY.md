@@ -138,6 +138,56 @@ for the actual host.
 
 ## Application protocol
 
+### Frontend UI extension
+
+Select `frontend-ui` explicitly under `selected_capabilities`. It is off by
+default for every adoption scope, including full workflow. It applies to the
+adopted Builder and Reviewer roles. Selecting the extension alone supplies no
+role. At least one of those roles must be in scope. Select motion separately
+within `frontend-ui` when wanted. Use the [method map](skills/README.md#optional-frontend-ui-extension)
+and [pinned sources and assets](skills/origins.md#frontend-ui-methods) to map only
+the methods for the adopted roles and selected options.
+
+Use the `<!-- apply:frontend-ui begin -->` and `<!-- apply:frontend-ui end -->`
+blocks in the source bootstrap and prompts as projection boundaries. When the
+extension is off, exclude each complete block and all other UI extension
+clauses, references, and assets from the target. Compare that projection with
+the core from the same harness revision. When the extension is selected, map the
+routing policy to a discovered native mechanism and supply relevant block text,
+method bodies, and references only to matching invocations. Keep them out of
+persistent instructions and global preloads. The application instructions and
+catalog are source material. Never use them or the unfiltered prompts as target
+runtime instructions. Remove directives and links for motion, roles, or methods
+that are outside the selection or unavailable after an approved omission.
+
+Use the existing Plan prose to identify the affected browser flow, observable
+criteria, and authorized design decisions or visual critique. The Main Agent
+passes relevant approved methods in the Builder's slice handoff. Review uses the
+concrete actual diff and retains independent correctness, security, and verification
+review. An API change qualifies when evidence shows changed user-visible web
+behavior. Backend-only work receives no UI clauses, method bodies, or references,
+including in an opted-in project. Material motion changes trigger motion methods
+only when motion is selected. Keep the existing roles, test handoffs, approval,
+retry, Task Result, and Review Result.
+
+Record each selected local definition's repository, path, resolved full commit
+SHA, access date, compatibility, recursive asset dispositions, and the exact
+discovered native destination and scoped load mechanism in the existing maps and
+approval packet. Pinned upstream influences document provenance. The selected
+local revision still needs resolution. Reuse a same-slug installation only with
+evidence that its behavior, role boundaries, assets, and load isolation are
+equivalent. For unsupported loading, obtain approval for a native translation
+or explicit omission. Remove omitted method directives and references before
+projection. Map one definition per method and preserve notices and required
+assets, including the verbatim Vercel reference. The extension contributes no
+launcher, additional writes, nested agents, or build or runtime dependency.
+
+Use the existing preapproval discovery and post-write verification for the
+[frontend UI adapter cases](adapters/README.md#optional-frontend-ui-mapping).
+Record native registration, scoped invocation, and backend-only isolation as
+distinct evidence. If the host cannot demonstrate isolation, record `unknown`
+for that mechanism and apply the existing discovery or verification outcome.
+
 ### Choose an adoption scope
 
 Applying the harness is a selection, not an all-or-nothing installation. After
@@ -192,6 +242,9 @@ Verify the adapter's acceptance cases, including pending-to-pass, approved repai
 and fresh-revision review/checks, unavailable evidence, exhausted budgets,
 interrupted/partial publication, unsupported wake-up, and revision movement.
 Missing CI does not authorize setup or turn local checks into remote success.
+
+The [frontend UI extension](#frontend-ui-extension) is independently selected
+under `selected_capabilities` and applies only to adopted roles.
 
 Inspect the target project and platform before asking scope or configuration
 questions. Ask only questions still unresolved by that inspection and relevant
@@ -281,6 +334,11 @@ When the user asks to apply this harness:
    optional-method mappings in `harness.yaml`; a same-slug candidate or alias
    is not automatic equivalence.
 
+   Preserve the [conditional core skill mapping](adapters/README.md#conditional-core-skill-mapping)
+   for adopted roles. Project the verified invocation reference and role trigger
+   for `root-cause` and `human-readable-communication`. Keep their method bodies
+   available for matching invocations without preloading them.
+
    `security-and-hardening` uses the single local `local_adaptation`; the former
    addyosmani same-slug candidate is excluded, not a fallback or duplicate method.
    Resolve the actual selected local source's full commit SHA, access date,
@@ -364,9 +422,15 @@ When the user asks to apply this harness:
    complete evidence. If native verification cannot be completed or evidence
    fails, mark the affected record `unknown` or `blocked`, stop before additional
    target writes, and report the run as blocked without claiming success.
+   For the adopted conditional core methods, follow the adapter's
+   [mapping evidence requirements](adapters/README.md#conditional-core-skill-mapping).
    For selected `pr` actions, include the adapter's PR acceptance evidence; official
    documentation and candidate entrypoint spellings do not prove native loading,
    action delivery, permission enforcement, delegation, or safe resumption.
+   For selected `frontend-ui`, include the adapter's registration, scoped invocation,
+   and backend-only isolation evidence. For an unselected extension, audit the
+   effective projection and file map for complete omission of its instructions,
+   references, and assets.
 10. Audit the resulting diff against the approved map and confirm that the
    illustrative source tree was not copied. Report the exact files created,
    changed, or left untouched; each verified native destination and mechanism;

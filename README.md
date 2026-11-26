@@ -126,6 +126,15 @@ its required boundary reference and license, and rewrite links; the pinned
 Cloudflare influence is provenance rather than the local adaptation's revision.
 See [source and asset decisions](skills/origins.md#security-and-hardening-adaptation).
 
+The [frontend UI extension](APPLY.md#frontend-ui-extension) is an explicit
+adoption choice, including for the full workflow. Existing Builder and Reviewer
+roles use selected methods only for concrete browser-facing work in the approved
+slice or actual diff. Motion is a separate opt-in for material motion changes.
+Default adoption omits the extension's instructions and assets. An opted-in
+project still keeps UI guidance out of backend-only invocations. See the
+[method map](skills/README.md#optional-frontend-ui-extension) and
+[adapter verification](adapters/README.md#optional-frontend-ui-mapping).
+
 The optional [`pr` skill](skills/pr/SKILL.md) is selected independently of the full
 workflow or Main Agent. `open` publishes selected changes and returns the PR URL;
 `ship` adds current independent review and check evidence, with repairs governed

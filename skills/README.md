@@ -83,10 +83,28 @@ The [canonical PR policy](../SPEC.md#optional-pr-capability) defines behavior;
 native invocation evidence. No native command, tool backend, or runtime support
 is supplied by this catalog.
 
-Domain skills can be added without changing the lifecycle:
+### Optional frontend UI extension
+
+Select `frontend-ui` independently at adoption and intersect its methods with
+the adopted roles. Full workflow alone leaves it off. Motion must also be
+selected before either motion method can be used.
+
+| Skill | Role | Load when |
+|---|---|---|
+| [impeccable](impeccable/SKILL.md) | Builder, Reviewer | Builder needs to make approved visual design decisions, or Reviewer has relevant approved read-only visual critique. |
+| [web-design-guidelines](web-design-guidelines/SKILL.md) | Reviewer | The actual diff changes browser-facing interface behavior. |
+| [animate](animate/SKILL.md) | Builder | Motion is selected and the approved slice materially changes motion. |
+| [review-animations](review-animations/SKILL.md) | Reviewer | Motion is selected and the actual diff materially changes motion. |
+
+An API change can qualify if evidence shows a changed user-visible web flow.
+An opted-in project still omits UI clauses, method bodies, and references from
+backend-only invocations. The application procedure controls opt-out projection,
+scoped loading, and omission. See [application rules](../APPLY.md#frontend-ui-extension)
+and [source and asset decisions](origins.md#frontend-ui-methods).
+
+Other domain skills can be added without changing the lifecycle:
 
 ```text
-frontend-ui
 api-design
 database-migrations
 data-pipelines
@@ -94,9 +112,8 @@ cloud-infrastructure
 observability
 ```
 
-Domain skills are project-specific extensions unless their own source is recorded;
-their default origin is not this repository. See [`origins.md`](origins.md) for
-stable links and the full provenance rules.
+Other domain skills are project-specific extensions unless their own source is
+recorded. See [`origins.md`](origins.md) for the provenance rules.
 
 ## Materialization rule
 

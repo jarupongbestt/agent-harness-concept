@@ -173,6 +173,67 @@ record its upstream influence. Unsupported native loading requires an approved
 translation into a supported native mechanism or an explicit omission; never
 silently substitute a source or method.
 
+## Conditional core skill mapping
+
+For adopted roles, preserve the [root-cause handoff rule](../AGENTS.md#conditional-skill-invocation)
+and [Main Agent communication trigger](../AGENTS.md#main-agent-communication).
+Map the exact verified name or path and load mechanism in the existing concept
+and file maps for the actual host version and operating mode. Keep the methods
+available for matching work without preloading their bodies. The affected role
+must be able to load `root-cause` when it discovers its own trigger. The Main
+Agent loads `human-readable-communication` before drafting a qualifying response
+and can reuse the instructions when they are available in its current context.
+
+Use the existing native verification records and `verification_evidence_ref`
+to distinguish registration, explicit selection, and actual loading. A catalog
+entry shows availability, and an invocation reference shows intent. For matching
+work, check the selection in the handoff or in-role trigger and observe that the
+mapped mechanism loads the method body. Evidence of application comes from
+supported findings and limits in the existing artifact or, for communication,
+a presentation that preserves the source meaning.
+When native loading is unsupported, use an approved translation into a verified
+host mechanism or explicitly omit the method with a reason and remove the load
+directive from the projection.
+
+## Optional frontend UI mapping
+
+Use [`APPLY.md`](../APPLY.md#frontend-ui-extension) to select `frontend-ui` and
+optional motion within it. Intersect the methods with the adopted Builder and
+Reviewer roles. Use the existing concept map and file map to record each selected
+definition, required assets, exact native destination, and load mechanism. A
+discovered skill directory or native catalog listing proves discovery or
+registration. For scoped loading, verify the actual invocation mechanism and
+effective instructions for the chosen host version and operating mode.
+
+Use a verified explicit skill load, native role/scope restriction, or approved
+native translation that supplies guidance only to a matching invocation. Keep
+the source projection blocks and skill bodies out of persistent bootstrap and
+role prompts. If the extension is absent, remove all extension prompt clauses,
+references, and assets from the target projection. In an opted-in target, the
+Main Agent can route the Builder using the approved slice handoff and review
+using concrete actual diff evidence. The Reviewer independently confirms UI
+applicability within the same review. Preserve the existing role and handoff
+boundaries. Remove directives for unavailable methods after approved omission.
+
+For the mapped scope, record evidence for these cases in the existing acceptance
+and verification records:
+
+| Case | Evidence |
+|---|---|
+| Extension off, including default full workflow | File map and effective instructions match the same-revision core without UI clauses, links, or assets. |
+| Extension on, backend-only change in a UI project | The active invocation receives no UI clauses, skill bodies, or references even though selected skills may be registered. |
+| Extension on, changed browser-facing behavior | A matching Builder handoff or Reviewer invocation loads only applicable selected methods. A change mediated by an API requires evidence of changed user-visible web behavior. |
+| Motion changed | Motion off leaves both motion methods out. Motion on loads only the method for the adopted role and actual motion scope. With motion on and no material motion change, a matching UI invocation omits both motion methods. |
+| Partial role adoption or approved omission | Only the selected roles and available methods have projected directives, links, and assets. |
+
+Keep native registration, observed scoped invocation, and observed backend-only
+isolation distinct in `verification_evidence_ref` records. A registered skill,
+generic capability claim, or existing file cannot verify that its body was
+loaded only where intended. If the host cannot prove isolation, mark the affected
+mechanism `unknown` under the existing discovery and verification rules. Record
+unavailable evidence and use the existing approved translation or omission path.
+These checks apply to adoption and do not add a stage to execution runs.
+
 ## Optional PR mapping
 
 Select `pr` independently; neither full-workflow nor Main Agent selection implies

@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-26
+
+- Add `frontend-ui` as an opt-in extension for existing Builder and Reviewer
+  roles. Use Impeccable for scoped visual design or critique and Vercel Web
+  Interface Guidelines for browser-facing changes. Projects can separately
+  select Emil Kowalski's motion guidance for work that changes animation.
+- Project UI instructions only into matching invocations. Keep the disabled
+  projection identical to the same-revision core and exclude UI guidance from
+  backend-only work in opted-in projects. Record source revisions, required
+  assets, and evidence for the selected host's loading mechanism.
+- Make existing `root-cause` handoffs explicit by naming the skill and passing
+  the triggering evidence. Load or reuse `human-readable-communication` before
+  drafting user-facing Plans, reports, and long or complex explanations.
+
 ## [0.5.0] - 2026-11-26
 
 - Define a bounded, repository-aware `ship` loop for the Main Agent to observe

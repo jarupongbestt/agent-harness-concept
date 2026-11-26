@@ -1,7 +1,7 @@
 # Portable Agent Harness Specification
 
 Status: concept
-Version: 0.5.0
+Version: 0.6.0
 
 ## 1. Purpose
 

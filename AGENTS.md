@@ -47,11 +47,11 @@ the action they govern. Follow the user's language, natural language mix, and
 preferred tone. Preserve meaning, evidence, uncertainty, and obligations, and
 keep technical names, code, paths, commands, quoted text, and artifact fields exact.
 
-For long or complex explanations, user-facing Plan presentations, and reports,
-load [`human-readable-communication`](skills/human-readable-communication/SKILL.md).
-Short messages use this lightweight policy. The detailed method guides the Main
-Agent's presentation; it does not automatically rewrite specialist English
-artifacts or change approval, lifecycle, roles, or artifact contracts.
+Before drafting a long or complex explanation, user-facing Plan presentation, or
+report, load [`human-readable-communication`](skills/human-readable-communication/SKILL.md)
+or reuse its instructions if they are already in your current context. Apply the
+method to the user-facing presentation. Short messages use this lightweight
+policy, and specialist artifacts retain their English contracts.
 
 ## Intent gate before Intake
 
@@ -229,6 +229,27 @@ Finalize and disabled Git-action defaults; `ship` repair requires the existing
 approved lifecycle, roles, scope, and cumulative retry history. See
 [`APPLY.md`](APPLY.md) for native mapping and capability discovery.
 
+<!-- apply:frontend-ui begin -->
+## Optional frontend UI extension
+
+Select `frontend-ui` explicitly during adoption. Full workflow alone leaves it
+off. Apply it only to the selected Builder and Reviewer roles, using the existing
+Planner and Main Agent where adopted to scope and route their work. Motion needs
+its own opt-in within the extension and a material motion change in the approved
+slice or reviewed diff. See the [application rules](APPLY.md#frontend-ui-extension)
+and [method map](skills/README.md#optional-frontend-ui-extension).
+
+Use approved scope and actual browser-facing changes to choose the applicable
+role guidance. An API change can qualify when evidence connects it to changed
+user-visible web behavior. A backend-only refactor in a UI repository leaves the
+extension out of that invocation. Send the Builder only the selected, relevant
+UI guidance in its approved slice handoff. For review, route against the actual
+diff and preserve independent assessment of the affected interface. Use a
+verified native per-invocation mechanism for relevant guidance and skill loads.
+The extension uses the existing roles, approval, test handoffs, retry rules,
+verification, and Review Result.
+<!-- apply:frontend-ui end -->
+
 ## Where the role instructions live
 
 - [`prompts/intake.md`](prompts/intake.md) — Intake Agent
@@ -251,6 +272,22 @@ example folders as a mandatory layout.
 
 ## Skills and provenance
 
+### Conditional skill invocation
+
+When the Main Agent sees that a role's [`root-cause`](skills/root-cause/SKILL.md)
+trigger applies, it explicitly names the exact verified skill name or path and
+load mechanism in the handoff. It includes the observed symptom, relevant prior
+findings, or the failed check and attempt, with the Verification Result when it
+supplies retry evidence. The receiving role loads the method and owns any trigger
+it discovers during its own work, using the verified mechanism for that role.
+
+Registration makes the skill available. A handoff selects it. The role then
+loads the instructions and shows how it applied them through grounded findings
+and remaining gaps in its existing artifact or accompanying evidence. Record a
+cause only when the evidence supports it. Use the existing retry and re-entry
+rules to route failures. See [adapter mapping](adapters/README.md#conditional-core-skill-mapping)
+for verification and approved translation or omission.
+
 ### Canonical role-to-skill map
 
 Roles own responsibilities and artifact contracts; skills provide reusable
@@ -265,7 +302,7 @@ names the skill and its trigger. These are the canonical mappings:
 | Test Engineer | `test-driven-development` | `code-quality` when adding or changing helpers, fixtures, or nontrivial setup or assertions; `security-and-hardening` when authoring relevant security tests for a concrete affected data, permission, or action boundary and operation whose required behavior lacks sufficient existing coverage | `schemas/artifacts.md` |
 | Implementer / Builder | `code-quality`, `incremental-implementation` | `root-cause` before retrying a failed check; `security-and-hardening` when implementation affects an identified data, permission, or action boundary and operation | `schemas/artifacts.md` |
 | Verifier | None | — | `schemas/artifacts.md` |
-| Reviewer | `code-review`, `code-quality` | `security-and-hardening` when the actual diff affects a concrete data, permission, or action boundary and operation, including concrete risk discovered during review; `root-cause` when findings concern an unclear failure | `schemas/artifacts.md` |
+| Reviewer | `code-review`, `code-quality` | `security-and-hardening` when the actual diff affects a concrete data, permission, or action boundary and operation, including concrete risk discovered during review; `root-cause` for unclear failures or suspicious behavior | `schemas/artifacts.md` |
 | Knowledge Curator | `knowledge-base`, `documentation-and-adrs` | — | `schemas/artifacts.md` |
 
 `knowledge-base` is required for Main Agent, Intake, and Planner in the full

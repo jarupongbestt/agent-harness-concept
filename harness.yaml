@@ -1,4 +1,4 @@
-version: "0.5.0"
+version: "0.6.0"
 name: portable-agent-harness
 
 application:
@@ -22,6 +22,36 @@ application:
     partial_scope_without_knowledge_reports: outside_scope
     ask_choices_only_when_required_by_selected_scope: true
     preserve_existing_equivalents_when_suitable: true
+    domain_extensions:
+      frontend-ui:
+        selected_through: selected_capabilities
+        selection: explicit_opt_in
+        enabled_by_default: false
+        full_workflow_enables: false
+        role_selection: intersection_with_adopted_roles
+        required_any_role: [implementer, reviewer]
+        methods_by_role:
+          implementer:
+            impeccable: approved_slice_includes_visual_design_decisions
+          reviewer:
+            impeccable: approved_read_only_critique_is_relevant_to_actual_diff
+            web-design-guidelines: actual_diff_changes_browser_facing_interface_behavior
+        motion:
+          selection: explicit_opt_in_with_frontend_ui
+          enabled_by_default: false
+          methods_by_role:
+            implementer:
+              animate: approved_slice_materially_changes_motion
+            reviewer:
+              review-animations: actual_diff_materially_changes_motion
+        projection:
+          source_block: 'apply:frontend-ui'
+          when_unselected: omit_all_ui_prompt_clauses_references_and_assets
+          when_selected: load_relevant_clauses_methods_and_references_per_invocation
+          backend_only_invocation: no_ui_clauses_method_bodies_or_references
+          global_preload: false
+          evidence: [native_registration, scoped_invocation, backend_only_isolation]
+        procedure: APPLY.md#frontend-ui-extension
   require_user_choices_before_adapter_changes:
     required_before_target_writes:
       - platform_identity
@@ -237,6 +267,7 @@ main_agent:
     short_messages: lightweight_bootstrap_policy
     detailed_skill: human-readable-communication
     detailed_skill_trigger: "long or complex explanations, user-facing Plan presentations, and reports"
+    detailed_skill_use: load_before_drafting_or_reuse_instructions_in_current_context
     automatically_rewrite_specialist_artifacts: false
     changes_roles_artifact_fields_approval_or_lifecycle: false
     guarantees_underlying_content_truth: false
@@ -547,6 +578,10 @@ skills:
     - doubt-driven-development
     - human-readable-communication
     - pr
+    - impeccable
+    - web-design-guidelines
+    - animate
+    - review-animations
   materialization_policy:
     distinguish_historical_provenance_from_application_source: true
     choose_exactly_one_materialization_source_per_skill: true
@@ -569,6 +604,59 @@ skills:
         - artifact_contracts
       if_upstream_body_requires_changes: classify_as_local_adaptation
     registry_entries:
+      impeccable:
+        materialization_default: local_definition
+        local_definition: skills/impeccable/SKILL.md
+        source_classification: local_adaptation
+        upstream_candidates: []
+        upstream_influence:
+          repository: https://github.com/pbakaus/impeccable
+          path: .agents/skills/impeccable/SKILL.md
+          resolved_commit_sha: 2fc5e1459efbbf06d92c7306517c286bf12490cf
+          accessed_date: '2026-11-26'
+        supporting_assets:
+          required: [skills/impeccable/references/design-criteria.md, skills/impeccable/LICENSE, skills/impeccable/NOTICE]
+          disposition_reference: skills/origins.md#frontend-ui-methods
+      web-design-guidelines:
+        materialization_default: local_definition
+        local_definition: skills/web-design-guidelines/SKILL.md
+        source_classification: local_adaptation
+        upstream_candidates: []
+        upstream_reference:
+          repository: https://github.com/vercel-labs/web-interface-guidelines
+          path: command.md
+          resolved_commit_sha: 434b7f91364665f2f733b310ec54809bf8f37937
+          accessed_date: '2026-11-26'
+          sha256: d246b026f4f29b5823a9cc857f9edf3d2507002e055e32040cadeaf3b38e0234
+        supporting_assets:
+          required: [skills/web-design-guidelines/references/web-interface-guidelines.md, skills/web-design-guidelines/LICENSE]
+          disposition_reference: skills/origins.md#frontend-ui-methods
+      animate:
+        materialization_default: local_definition
+        local_definition: skills/animate/SKILL.md
+        source_classification: local_adaptation
+        upstream_candidates: []
+        upstream_influence:
+          repository: https://github.com/emilkowalski/skills
+          path: skills/animate/SKILL.md
+          resolved_commit_sha: 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c
+          accessed_date: '2026-11-26'
+        supporting_assets:
+          required: [skills/animate/references/motion-guidance.md, skills/animate/LICENSE]
+          disposition_reference: skills/origins.md#frontend-ui-methods
+      review-animations:
+        materialization_default: local_definition
+        local_definition: skills/review-animations/SKILL.md
+        source_classification: local_adaptation
+        upstream_candidates: []
+        upstream_influence:
+          repository: https://github.com/emilkowalski/skills
+          path: skills/review-animations/SKILL.md
+          resolved_commit_sha: 64eb3deb9a5fbfa041faf783e0bc3fd635872e9c
+          accessed_date: '2026-11-26'
+        supporting_assets:
+          required: [skills/review-animations/references/motion-review.md, skills/review-animations/LICENSE]
+          disposition_reference: skills/origins.md#frontend-ui-methods
       pr:
         materialization_default: local_definition
         local_definition: skills/pr/SKILL.md
@@ -819,7 +907,7 @@ skills:
       required: [code-review, code-quality]
       conditional:
         security-and-hardening: "when the actual diff affects a concrete data, permission, or action boundary and operation, including concrete risk discovered during review"
-        root-cause: "findings concern an unclear failure"
+        root-cause: "unclear failures or suspicious behavior"
       artifact_contract: schemas/artifacts.md
     knowledge_curator:
       required: [knowledge-base, documentation-and-adrs]
@@ -829,6 +917,7 @@ skills:
     - harness-artifacts
   root_cause:
     enabled: true
+    invocation_policy: AGENTS.md#conditional-skill-invocation
     used_by:
       - intake
       - planner

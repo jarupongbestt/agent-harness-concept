@@ -7,8 +7,8 @@ Pi, OpenCode, Hermes, and other agents.
 The skills are not claimed to be copied verbatim from any one runtime. `Adapted`
 means the concept is based on a named source and rewritten for the portable
 harness. `Synthesized` means it combines the referenced harness design with common
-software-engineering practice. `Domain extension` means it is a placeholder for a
-project-specific capability, not a skill supplied by this repository.
+software-engineering practice. `Domain extension` means an optional domain
+capability. Its row identifies whether the repository supplies portable methods.
 
 The table below records historical concept provenance: why this repository has a
 skill and what it retains. It does not select the source to materialize in an
@@ -73,12 +73,60 @@ it does not establish authorship, origin, equivalence, or compatibility.
 | `doubt-driven-development` | Adapted | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development) | Main-Agent orchestration that sends a minimal packet for fresh-context adversarial review, reconciles evidence, and bounds follow-up; no mandatory external CLI/model |
 | `human-readable-communication` | Local adaptation | [danyuchn/asd-ste100-skill v0.4.0](https://github.com/danyuchn/asd-ste100-skill/blob/7d4a135a199a5d7447c4886bcd7ffe742a627bc9/SKILL.md) | Familiar words, clear actors, focused topics, stable terms, and conditions beside actions; rewritten as a relaxed, language-aware Main Agent presentation method that preserves meaning and harness contracts |
 | `pr` | Synthesized | [agent-harness](https://github.com/jarupongbestt/agent-harness); Git/PR publication and evidence-based review practice | Original local synthesis for optional `open` and `ship`, preserving selected scope, current evidence, independent roles, and bounded recovery |
-| `frontend-ui` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
+| `frontend-ui` | Domain extension | [Frontend UI methods](#frontend-ui-methods) | Independently selected design, guideline review, and optional motion methods for adopted roles |
+| `impeccable` | Local adaptation | [Impeccable](https://github.com/pbakaus/impeccable/tree/2fc5e1459efbbf06d92c7306517c286bf12490cf/.agents/skills/impeccable) | Scoped product design craft and read-only visual critique |
+| `web-design-guidelines` | Local adaptation | [Vercel Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines/tree/434b7f91364665f2f733b310ec54809bf8f37937) | Independently authored reviewer wrapper with a verbatim upstream rules reference |
+| `animate` | Local adaptation | [Emil Kowalski's animate](https://github.com/emilkowalski/skills/tree/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/animate) | Approved Builder motion decisions and validation |
+| `review-animations` | Local adaptation | [Emil Kowalski's review-animations](https://github.com/emilkowalski/skills/tree/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/review-animations) | Read-only, evidence-backed motion review |
 | `api-design` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `database-migrations` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `data-pipelines` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `cloud-infrastructure` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
 | `observability` | Domain extension | Project-specific | Optional domain capability; no portable source is prescribed |
+
+## Frontend UI methods
+
+The [optional extension](../APPLY.md#frontend-ui-extension) uses the local skill
+definitions in [`harness.yaml`](../harness.yaml). The pinned upstream materials
+below were accessed on 2026-11-26. Resolve the selected local definitions' full
+commit SHA and access date at application time. Review compatibility and record
+required assets, exact native destinations, and disposition reasons. Keep
+licenses and notices with each materialized method. Rewrite projected local
+links to approved locations and remove links to omitted assets.
+
+- `impeccable` adapts `pbakaus/impeccable` at
+  `2fc5e1459efbbf06d92c7306517c286bf12490cf`. The review covered
+  `.agents/skills/impeccable/SKILL.md`, `reference/craft-floor.md` and
+  `reference/critique.md` in that skill folder, and the repository's Apache-2.0
+  `LICENSE` and `NOTICE.md`. The local adaptation retains design and critique
+  criteria and omits the launcher, hooks, upstream writes, and playbooks that
+  would broaden scope or conflict with harness roles. Include the
+  [design criteria](impeccable/references/design-criteria.md),
+  [LICENSE](impeccable/LICENSE), and [NOTICE](impeccable/NOTICE).
+- `web-design-guidelines` uses an independently authored review wrapper and the
+  exact bytes of `vercel-labs/web-interface-guidelines` `command.md` at
+  `434b7f91364665f2f733b310ec54809bf8f37937`. The reference SHA-256 is
+  `d246b026f4f29b5823a9cc857f9edf3d2507002e055e32040cadeaf3b38e0234`.
+  Include the [verbatim rules reference](web-design-guidelines/references/web-interface-guidelines.md)
+  and the [MIT LICENSE](web-design-guidelines/LICENSE) from the same revision.
+- `animate` adapts `skills/animate/SKILL.md` and `skills/animate/RECIPES.md`
+  from `emilkowalski/skills` at `64eb3deb9a5fbfa041faf783e0bc3fd635872e9c`.
+  It retains scoped motion design and validation and omits third-party routes
+  and other unrelated operations. Include the [motion guidance](animate/references/motion-guidance.md)
+  and the [MIT LICENSE](animate/LICENSE) from the repository root.
+- `review-animations` adapts `skills/review-animations/SKILL.md` and
+  `skills/review-animations/STANDARDS.md` from `emilkowalski/skills` at
+  `64eb3deb9a5fbfa041faf783e0bc3fd635872e9c`. It retains read-only review and
+  omits third-party routes and other unrelated operations. Include the
+  [motion review criteria](review-animations/references/motion-review.md) and
+  the [MIT LICENSE](review-animations/LICENSE) from the repository root.
+
+Vercel's published `vercel-labs/agent-skills` wrapper was reviewed at
+[`5a37a6329fbad3666c3207392a6a7c0110e92efb`](https://github.com/vercel-labs/agent-skills/tree/5a37a6329fbad3666c3207392a6a7c0110e92efb/skills/web-design-guidelines),
+including `skills/web-design-guidelines/SKILL.md` and
+`skills/web-design-guidelines/references/command.md`. That wrapper was excluded
+from the materialized sources. The selected local method uses the separate MIT
+rules reference and needs no remote fetch or launcher at invocation time.
 
 ## PR synthesis
 

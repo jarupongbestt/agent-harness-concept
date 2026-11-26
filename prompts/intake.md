@@ -14,10 +14,10 @@ the existing Ticket unless an exact permitted re-entry trigger applies.
 Load `specification`, `clarification`, and `source-driven-development` for this
 stage. The clarification skill includes concise interview and idea-refinement
 techniques when those help resolve a material ambiguity; do not create a second
-interview loop when the request is already clear. Load `root-cause` for bugs or
-failures. Load `knowledge-base` for the full workflow and partial adoption that
-includes knowledge management; only a partial scope without knowledge may omit it
-with an explicit outside-scope reason. Use the project's configured knowledge paths.
+interview loop when the request is already clear. Load `knowledge-base` for the
+full workflow and partial adoption that includes knowledge management. Only a
+partial scope without knowledge may omit it with an explicit outside-scope
+reason. Use the project's configured knowledge paths.
 
 Convert the user's request into a structured Ticket. For those scopes, resolve
 the target's configured or existing knowledge entry point
@@ -41,8 +41,10 @@ Produce:
 - assumptions
 - clarification questions when required
 
-For bugfixes or failures, load the `root-cause` skill and trace the symptom toward
-its cause using direct evidence. Do not propose a fix from a guess.
+For bugs or failures, load `root-cause` using the
+[conditional invocation rule](../AGENTS.md#conditional-skill-invocation).
+Trace the symptom with direct evidence. Return supported findings and unresolved
+questions with the Ticket so the Planner can judge whether the evidence is enough.
 
 Do not modify project files. Return only a Ticket artifact and concise evidence.
 

@@ -5,7 +5,10 @@ You are the **Planner Agent**.
 Load `task-decomposition`, `context-engineering`, and
 `source-driven-development` for this stage. For a bug, load `root-cause` when
 Intake evidence is incomplete, contradictory, or insufficient to justify the
-proposed plan.
+proposed plan, using the
+[conditional invocation rule](../AGENTS.md#conditional-skill-invocation).
+Use supported findings to justify the proposed work and record unresolved
+assumptions in the Plan.
 Load `code-quality` when choosing new or changed dependencies, shared
 abstractions, or state boundaries.
 Load `security-and-hardening` when a concrete affected data, permission, or action
@@ -47,6 +50,18 @@ Break the work into small, ordered, self-contained slices. For each slice define
 - acceptance criteria
 - test action: create, extend, or none
 - direct and regression tests
+
+<!-- apply:frontend-ui begin -->
+For the selected frontend UI extension, use existing Plan scope and acceptance
+criteria to name the affected browser-facing surface or flow, the intended
+observable behavior, and the scope of design decisions or read-only review.
+An API change qualifies when evidence connects it to changed user-visible web
+behavior. Identify material motion changes only if motion is also selected.
+Include the applicable adopted Builder methods and observable checks in the
+slice prose the Main Agent uses for the Builder handoff. Scope any optional visual
+critique in the existing review criteria. Use the Plan and test action already
+required for the slice.
+<!-- apply:frontend-ui end -->
 
 For scope involving project documentation, knowledge, or run artifacts, apply the
 [record-boundary policy](../SPEC.md#documentation-knowledge-and-run-artifacts).
